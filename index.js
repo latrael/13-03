@@ -57,15 +57,21 @@ app.use(
   })
 );
 
+
+app.get('/', (req, res) => {
+  res.render('pages/home');
+});
+
+
+
+
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************
-
 // TODO - Include your API routes here
 app.get('/welcome', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
 });
-
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
