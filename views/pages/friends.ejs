@@ -1,0 +1,75 @@
+<%- include ('../partials/header') %> 
+<%- include ('../partials/menu') %>
+<%- include ('../partials/message') %>
+
+<head>
+    <style>
+        div.scroll {
+          width: 50%;
+          height: 35rem;
+          overflow-x: hidden;
+          overflow-y: auto;
+          text-align: center;
+          padding: 20px;
+        }
+      </style>
+</head>
+
+<body>
+    <main>
+        <div class="row">
+            <div class="column" style="width: 60%;">
+                <div class="container-fluid">
+                    <h1 style="display: inline-block;" >Friends</h1>
+                </div>
+            </div>
+            <div class="column" style="width: 40%;">
+                <div class="container-fluid">
+                    <form action="add friend" method="POST">
+                        <div class="form-group" sty>
+                            <label for="friend_search">Username</label>
+                            <input type="email" class="form-control" id="friend_search" aria-describedby="search_help" placeholder="Enter username">
+                            <small id="search_help" class="form-text text-muted">Please enter the username of the user you wish to search</small>
+                            <!-- this should either display your friends profile and communities or prompt you to add them as a friend after
+                            the search goes through-->
+                        </div>
+                      <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Friends
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Friends communities
+                    </label>
+                  </div>
+                <div class="scroll">
+                    <table class="table">
+                        <tbody>
+                            <% for(var i=0; i < 20; i++) {%>
+                                <tr>
+                                  <td>
+                                   <p>community</p>
+                                  </td>
+                                </tr>
+                             <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col">
+                <p style="padding-top: 25%;">This is where the event calendar goes</p>
+            </div>
+        </div>
+    </main>
+</body>
+<%- include ('../partials/footer') %>
