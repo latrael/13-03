@@ -172,6 +172,9 @@ app.get("/friends", (req, res) => {
   res.render("pages/friends");
 });
 
+app.get("/discover", (req, res) => {
+  res.render("pages/Discover");
+});
 
 
 // *****************************************************
