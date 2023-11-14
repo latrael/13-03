@@ -5,12 +5,14 @@ changelog:
     labels:
       - ignore-for-release
     authors:
+      - "*"
   categories:
     - title: New Changes
       labels:
         - breaking-change
     - title: New Features
       labels:
+        - "*"
     - title: Other Changes
       labels:
         - "*"
