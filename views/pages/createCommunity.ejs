@@ -1,0 +1,38 @@
+
+<%- include ('../partials/header') %> 
+<%- include ('../partials/menu') %>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Community</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Your Community</h1>
+        <form id="create-community-form">
+            <div class="mb-3">
+                <label for="communityName" class="form-label">Community Name</label>
+                <input type="text" class="form-control" id="communityName" name="name" required maxlength="40">
+            </div>
+            <div class="mb-3">
+                <label for="communityDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="communityDescription" name="description" required maxlength="500"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="communityFilters" class="form-label">Select Filters</label>
+                <select multiple class="form-select" id="communityFilters" name="filters">
+                    <!-- Options for filters -->
+                    <option value="filter1">Filter 1</option>
+                    <option value="filter2">Filter 2</option>
+
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Community</button>
+        </form>
+    </div>
+
+</body>
+
+<%- include ('../partials/footer') %>
+
