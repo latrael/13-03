@@ -1,7 +1,8 @@
  CREATE TABLE users (
     userID SERIAL PRIMARY KEY,
+    fullName VARCHAR(40),
     username VARCHAR(40),
-    password VARCHAR(40),
+    password CHAR(60),
     email VARCHAR(40)
 );
 
