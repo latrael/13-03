@@ -25,4 +25,63 @@ describe("Server!", () => {
 
   // ===========================================================================
   // TO-DO: Part A Login unit test case
+
+
+  //Positive Test case
+
+  it("Positive : /login", (done) => {
+    chai
+      .request(server)
+      .post("/login")
+      .send({ username: "john_doe", password: "123"})
+      .end((err, res) => {
+        expect(res).to.have.status(200); 
+        expect(res.text).to.include('Successfully logged in');
+        done();
+      });
+  });
+
+  // Negative Test case
+
+  it("negative: /login", (done) => {
+    chai
+      .request(server)
+      .post("/login")
+      .send({ username: "john_doe", password: "12345" })
+      .end((err, res) => {
+        expect(res).to.have.status(200); 
+        expect(res.text).to.include('Incorrect password');
+        done();
+      });
+  });
+  
+  it("Positive : /register", (done) => {
+    chai
+      .request(server)
+      .post("/register")
+      .send({ fullName: "John Doe", email: "john1@gmail.com", username: "john_doe2", password: "123"})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.text).to.include('Successfully registered');
+        done();
+      });
+  });
+
+  it("Negative : /register", (done) => {
+    chai
+      .request(server)
+      .post("/register")
+      .send({ fullName: "John Doe", email: "john@example.com", username: "john_doe33", password: "123"})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.text).to.include('Email already exists. Please Log in');
+        done();
+      });
+  });
+
+
+
+
+
+
 });
