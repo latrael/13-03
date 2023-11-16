@@ -96,22 +96,14 @@ app.post("/register", async (req, res) => {
         error: "danger",
       });
       //return res.status(401).json({ error: 'User already exists.' });
-    } else if (user_exists) {
-      res.render("pages/register", {
-        message: "Username already exists. Enter alternate username",
-        error: "danger",
-      });
-    } else {
-      const query =
-        "INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)";
-      await db.query(query, [
-        req.body.fullName,
-        req.body.email,
-        req.body.username,
-        hash,
-      ]);
-      //res.status(201).json({ message: 'User registered successfully.' });
-      res.redirect("/login");
+    }
+    else if(user_exists){
+      res.render('pages/register', {message: 'Username already exists. Enter alternate username', error: 'danger'});
+    }
+    else{
+      const query = 'INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)';
+      await db.query(query, [req.body.fullName, req.body.email, req.body.username, hash]);
+      res.render('pages/login', {data: req.session.user, message: 'Successfully registered'});
     }
   } catch (error) {
     console.error("Error while registering user: " + error);
@@ -148,13 +140,11 @@ app.post("/login", async (req, res) => {
     console.log(password);
     console.log(user.password);
     console.log(match);
-    if (match == false) {
-      console.log("incorrect password");
-      res.render("pages/login", {
-        message: "Incorrect password",
-        error: "danger",
-      });
-    } else {
+    if(match == false){
+      console.log('Incorrect password');
+      res.render('pages/login', {message: 'Incorrect password', error: 'danger'});
+    }
+    else{
       req.session.user = user;
       req.session.save();
       console.log(req.session);
