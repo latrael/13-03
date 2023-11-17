@@ -18,7 +18,7 @@ CREATE TABLE friends (
 CREATE TABLE communities (
     communityID SERIAL PRIMARY KEY,
     name VARCHAR(40),
-        description VARCHAR(500)
+        description VARCHAR(5000)
 );
 
 CREATE TABLE users_to_communities (
@@ -32,7 +32,7 @@ CREATE TABLE events (
     eventID SERIAL PRIMARY KEY,
     name VARCHAR(100),
     description TEXT,
-    date TIMESTAMP,
+    date VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
     location TEXT
 );
 

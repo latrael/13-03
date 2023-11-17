@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session"); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require("bcrypt"); //  To hash passwords
 const axios = require("axios"); // To make HTTP requests from our server. We'll learn more about it in Part B.
-app.use(express.static('src'));
+app.use(express.static("src"));
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
 // *****************************************************
@@ -180,9 +180,24 @@ app.get("/friends", (req, res) => {
   res.render("pages/friends");
 });
 
-app.get("/discover", (req, res) => {
-  res.render("pages/Discover");
+app.get("/discover", async (req, res) => {
+  // res.render("pages/Discover");
+  const allCommunitiesQuery = `SELECT * FROM communities`;
+  const allEventsQuery = `SELECT * FROM events`;
+  try {
+    // Fetch data from the database
+    const communities = await db.any(allCommunitiesQuery);
+    const events = await db.any(allEventsQuery);
+    console.log(communities, events)
+    
+    // Render the EJS template with the retrieved data
+    res.render("pages/Discover", { allCommunities: communities, allEvents: events });
+  } catch (error) {
+    console.error("Error in /discover route:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
+
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

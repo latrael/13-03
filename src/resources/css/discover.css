@@ -17,6 +17,14 @@ hr {
   height: 2px; /* Set the height of the line */
   background-color: #333; /* Set the color of the line */
 }
+form {
+  background-color: #78c2ad;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 5px; /* Adjust the value to set the desired spacing */
+}
+
 
 
 #Container {
@@ -35,12 +43,13 @@ hr {
   /* flex: 2; Takes up 2/3 of the available space */
   background-color: #e0e0e0; /* Optional: Background color for illustration */
   height: 600px;
-  width: 900px;
+  width: 850px;
   
   outline: 1px solid black;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   box-sizing: border-box; /* Include padding and border in the total width and height */
-
+  overflow-y: scroll;
+  padding: 0.75rem;
 }
 
 #RandomEventContainer {
@@ -52,6 +61,12 @@ hr {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   outline: 1px solid black; 
   box-sizing: border-box; /* Include padding and border in the total width and height */
+  overflow-y: scroll;
+  /* overflow-x:scroll; */
+  padding: 0.75rem;
+  width: 37%;
+  overflow-x: scroll;
+
 }
 
 .title{
@@ -61,12 +76,4 @@ hr {
   justify-content: center;
 }
 
-.card {
-  flex: 0 0 calc(33.333% - 20px); /* 3 columns with 20px spacing between */
-  margin: 10px;
-  box-sizing: border-box;
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+
