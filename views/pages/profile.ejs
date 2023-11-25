@@ -21,10 +21,25 @@
                     </div>
                     <br>
                     <a class="btn btn-outline-danger" href='/logout' role="button">Log out</a>
+                    <a class="btn btn-outline-secondary" role="button">Change Password</a>
+                </div>
+
+              <div class="col-md-4 offset-md-0 mt-4" >
+                    <div class="list-group">
+                        <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends</h5>
+                        <% for(const key in data) { %>
+                            <% if(data.hasOwnProperty(key) && !isNaN(parseInt(key))) { %>
+                              <a class="list-group-item list-group-item-action"><%= data[key].fullname %></a>
+                            <% } %>
+                          <% } %>
+                    </div>
+                    <br>
+                    <a class="btn btn-outline-success" href='/friends' role="button">Add Friend</a>
                 </div>
 
             </div>
         </div>
+        
     </main>
 
 
