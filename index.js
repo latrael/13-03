@@ -164,7 +164,7 @@ app.get("/logout", function (req, res) {
   res.render("pages/login", { message: "Successfully logged out" });
 });
 
-app.get("/profile", (req, res) => {
+app.get("/profile", async (req, res) => {
   console.log(req.session.user);
   if (req.session.user == undefined) {
     res.render("pages/login", {
@@ -172,7 +172,18 @@ app.get("/profile", (req, res) => {
       error: "danger",
     });
   } else {
-    res.render("pages/profile", { data: req.session.user });
+    const fquery = `
+    SELECT *
+    FROM friends
+    RIGHT JOIN users
+    ON friends.useridB = users.userid
+    WHERE userIDA = $1`;
+    const friends = await db.query(fquery, [req.session.user.userid]);
+    const info = (Object.assign(req.session.user, friends));
+    console.log(info['1'].useridb)
+    res.render("pages/profile", {
+      data: Object.assign(req.session.user, friends)
+    });
   }
 });
 
