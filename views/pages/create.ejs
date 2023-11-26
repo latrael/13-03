@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <h1>Create Your Community</h1>
-        <form id="create-community-form">
+        <form id="create-community-form" action="/create-community" method="post">
             <div class="mb-3">
                 <label for="communityName" class="form-label">Community Name</label>
                 <input type="text" class="form-control" id="communityName" name="name" required maxlength="40">
@@ -23,8 +23,15 @@
                 <label for="communityFilters" class="form-label">Select Filters</label>
                 <select multiple class="form-select" id="communityFilters" name="filters">
                     <!-- Options for filters -->
-                    <option value="filter1">Filter 1</option>
-                    <option value="filter2">Filter 2</option>
+                    <option value="filter1">Fraternity</option>
+                    <option value="filter2">Sorority</option>
+                    <option value="filter3">Club</option>
+                    <option value="filter4">Sports</option>
+                    <option value="filter5">Academic</option>
+                    <option value="filter6">Hobby</option>
+                    <option value="filter7">Business</option>
+                    <option value="filter8">Engineering</option>
+
 
                 </select>
             </div>
