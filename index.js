@@ -241,6 +241,8 @@ app.get("/create", (req, res) => {
 });
 
 
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post ('/create-community', async (req, res) => {
@@ -249,7 +251,7 @@ app.post ('/create-community', async (req, res) => {
 
     const filtersString = filters.join(',');
 
-    const newCommunity = await pool.query(
+    const newCommunity = await db.query(
       "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
       [name, description, filtersString]
     );
