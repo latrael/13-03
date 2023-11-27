@@ -18,7 +18,7 @@ CREATE TABLE friends (
 CREATE TABLE communities (
     communityID SERIAL PRIMARY KEY,
     name VARCHAR(40),
-        description VARCHAR(5000),
+    description VARCHAR(5000),
     filters VARCHAR(250)
 );
 
