@@ -62,8 +62,34 @@ app.use(
 // *****************************************************
 // TODO - Include your API routes here
 
-app.get("/", (req, res) => {
-  res.render("pages/home");
+app.get("/", async (req, res) => {
+  console.log(req.session.user);
+  if (req.session.user == undefined) {
+    res.render("pages/login", {
+      message: "Log in to view your communities",
+      error: "danger",
+    });
+  } else {
+    const userCommunitiesQuery = `
+      SELECT communities.name 
+      FROM users_to_communities 
+      JOIN communities 
+      ON users_to_communities.communityID = communities.communityID 
+      WHERE users_to_communities.userID = $1`;
+
+    try {
+      // Fetch user's communities from the database
+      const userCommunities = await db.any(userCommunitiesQuery, [req.session.user.userid]);
+
+      console.log('User communities:', userCommunities);
+
+      // Render the EJS template with the retrieved user communities
+      res.render("pages/home", { userCommunities });
+    } catch (error) {
+      console.error('Error fetching user communities:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
 });
 
 app.get("/welcome", (req, res) => {
@@ -132,6 +158,8 @@ app.post("/login", async (req, res) => {
       req.body.username,
     ]);
 
+    console.log('User object before setting session:', user);
+
     if (!user) {
       res.render("pages/login", { message: "User not found", error: "danger" });
     }
@@ -180,7 +208,6 @@ app.get("/profile", async (req, res) => {
     WHERE userIDA = $1`;
     const friends = await db.query(fquery, [req.session.user.userid]);
     const info = (Object.assign(req.session.user, friends));
-    console.log(info['1'].useridb)
     res.render("pages/profile", {
       data: Object.assign(req.session.user, friends)
     });
@@ -212,7 +239,6 @@ app.get("/discover", async (req, res) => {
 app.get("/create", (req, res) => {
   res.render("pages/create");
 });
-
 
 
 

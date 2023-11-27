@@ -7,33 +7,25 @@
         <!-- Alen Ramic - This is the column where the website users communites pop up for now just has static varibles -->
         <div class="container">
 
-            <div class="row">
-
-                <div class="col-md-4 offset-md-0 mt-4" >
-                    <div class="list-group">
-                        <h5 class="list-group-item list-group-item-action active"  aria-current="true">Your Communities</h5>
-                        <a href="#" class="list-group-item list-group-item-action">Community 1</a>
-                        <a href="#" class="list-group-item list-group-item-action">Community 2</a>
-                        <a href="#" class="list-group-item list-group-item-action">Community 3</a>
-                        <a href="#" class="list-group-item list-group-item-action">Community 5</a>
-                        <a href="#" class="list-group-item list-group-item-action">Community 6</a>
-                        <a href="#" class="list-group-item list-group-item-action">Community 7</a>
-                    </div>
+          <div class="row">
+            <!-- User Communities Section -->
+            <div class="col-md-4 offset-md-0 mt-4">
+                <div class="list-group">
+                    <h5 class="list-group-item list-group-item-action active" aria-current="true">Your Communities</h5>
+                    <% if (userCommunities.length > 0) { %>
+                        <% userCommunities.forEach(community => { %>
+                            <a href="#" class="list-group-item list-group-item-action"><%= community %></a>
+                        <% }); %>
+                    <% } else { %>
+                        <p>You are not part of any communities yet. 
+                            <a href="/discover">Join</a> or 
+                            <a href="/create">create</a> communities to get started!
+                        </p>
+                    <% } %>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-                
-
-                        <!-- NABIL DJABER CALENDER ELEMENTS-->
+            </div>
+            
+                            <!-- NABIL DJABER CALENDER ELEMENTS-->
                 <div class="col-md-4 offset-md-0 mt-4">
                     <div id="calendar">
 
