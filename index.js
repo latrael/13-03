@@ -202,11 +202,11 @@ app.get("/profile", async (req, res) => {
     SELECT *
     FROM friends
     RIGHT JOIN users
-    ON friends.useridB = users.userid
+    ON friends.userIDB = users.userid
     WHERE userIDA = $1`;
     const friends = await db.query(fquery, [req.session.user.userid]);
     const info = (Object.assign(req.session.user, friends));
-    console.log(info['1'].useridb)
+    console.log(info['0'].userIDB);
     res.render("pages/profile", {
       data: Object.assign(req.session.user, friends)
     });
