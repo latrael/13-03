@@ -14,8 +14,9 @@
                     <h5 class="list-group-item list-group-item-action active" aria-current="true">Your Communities</h5>
                     <% if (userCommunities.length > 0) { %>
                         <% userCommunities.forEach(community => { %>
-                            <a href="#" class="list-group-item list-group-item-action"><%= community %></a>
-                        <% }); %>
+                          <button class="list-group-item list-group-item-action"
+                          onclick="loadCommunityCalendar('<%= community.name %>')"><%= community.name %>
+                          </button><% }); %>
                     <% } else { %>
                         <p>You are not part of any communities yet. 
                             <a href="/discover">Join</a> or 
@@ -24,88 +25,21 @@
                     <% } %>
                 </div>
             </div>
-            
+            <br>
                             <!-- NABIL DJABER CALENDER ELEMENTS-->
-                <div class="col-md-4 offset-md-0 mt-4">
-                    <div id="calendar">
-
-                        <div id = "event-modal" class="modal" tabindex="-1" >
-                          <div class="modal-dialog">
-                          
-                            <div class="modal-content">
-                
-                              <div class="modal-header">
-                                <h5 class="modal-title">Modal title</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="col-md-8 offset-md-0 mt-8">
+                              <div id="title" style="
+                              background: #78c2ad;
+                              border-radius: 6px;
+                              padding: 4px;
+                              padding-right: 5px;
+                              padding-left: 5px;">
+                                <h3 id="calendar-name" style="text-align: center;"></h3>
                               </div>
-                
-                              <div class="modal-body">
-                
-                              <form>
-                                
-                
-                                <div class="mb-3">
-                                  <label for = "event_name" class="form-label">Event Name</label>
-                                  <input id = "event_name" type="text" class="form-control">
-                                </div>
-                
-                                <div class="input-group mb-3">
-                                  <label class="input-group-text" for="weekday">Weekday</label>
-                                  <select class="form-select" id="weekday">
-                                    <option selected>Weekday</option>
-                                    <option>Monday</option>
-                                    <option >Tuesday</option>
-                                    <option >Wednesday</option>
-                                    <option >Thursday</option>
-                                    <option >Friday</option>
-                                    <option >Saturday</option>
-                                    <option >Sunday</option>
-                                  </select>
-                                </div>
-                
-                                <div class="cs-form">
-                                  <input type="time" class="form-control" value="10:30 AM" id = "time" />
-                                </div>
-                
-                                <select class="form-control" id="modality" required onchange="updateLocationOptions(this.value)">
-                                  <option value="in-person" default>In Person</option>
-                                  <option value="remote">Remote</option>
-                                </select>
-                
-                                <div class="mb-3">
-                                  <label for = "location" class="form-label">Location</label>
-                                  <input id = "location" type="text" class="form-control">
-                                </div>
-                
-                                <div class="mb-3">
-                                  <label for = "remote_url" class="form-label">Remote-URL</label>
-                                  <input id = "remote_url" type="text"   class="form-control" placeholder="https:// ">
-                                </div>
-                
-                                <div class="mb-3">
-                                  <label for = "attendees" class="form-label">Attendees</label>
-                                  <input id = "attendees" type="text" class="form-control" placeholder="Enter Attendee Names (comma-separated)">
-                                </div>
-                
-                      
-                              </div>
-                
-                
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" id = "submit_button" class="btn btn-primary">Create Event</button>
-                              </div>
-                
-                            </form>
-                
+                              <div id="calendar"></div>
                             </div>
+                            
                 
-                          </div>
-                
-                        </div>
-                
-                      </div>
-                </div>
             </div>
         </div>
 
