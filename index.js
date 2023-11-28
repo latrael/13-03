@@ -62,9 +62,35 @@ app.use(
 // *****************************************************
 // TODO - Include your API routes here
 
-app.get("/", (req, res) => {
-  res.render("pages/home");
-});
+app.get("/", async (req, res) => {
+  console.log(req.session.user);
+  if (req.session.user == undefined) {
+    res.render("pages/login", {
+      message: "Log in to view your communities",
+      error: "danger",
+    });
+  } else {
+    const userCommunitiesQuery = 
+    `SELECT communities.name 
+      FROM users_to_communities 
+      JOIN communities 
+      ON users_to_communities.communityID = communities.communityID 
+      WHERE users_to_communities.userID = $1`;
+
+    try {
+      // Fetch user's communities from the database
+      const userCommunities = await db.any(userCommunitiesQuery, [req.session.user.userid]);
+
+      console.log('User communities:', userCommunities);
+
+      // Render the EJS template with the retrieved user communities
+      res.render("pages/home", { userCommunities });
+    } catch (error) {
+      console.error('Error fetching user communities:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+}); 
 
 app.get("/welcome", (req, res) => {
   res.json({ status: "success", message: "Welcome!" });
@@ -176,7 +202,7 @@ app.get("/logout", function (req, res) {
   res.render("pages/login", { message: "Successfully logged out" });
 });
 
-app.get("/profile", (req, res) => {
+app.get("/profile", async (req, res) => {
   console.log(req.session.user);
   if (req.session.user == undefined) {
     res.render("pages/login", {
@@ -184,7 +210,18 @@ app.get("/profile", (req, res) => {
       error: "danger",
     });
   } else {
-    res.render("pages/profile", { data: req.session.user });
+    const fquery = `
+    SELECT *
+    FROM friends
+    RIGHT JOIN users
+    ON friends.userIDB = users.userid
+    WHERE userIDA = $1`;
+    const friends = await db.query(fquery, [req.session.user.userid]);
+    const info = (Object.assign(req.session.user, friends));
+    console.log(info['0'].userIDB);
+    res.render("pages/profile", {
+      data: Object.assign(req.session.user, friends)
+    });
   }
 });
 
@@ -286,6 +323,39 @@ app.post("/addUserToEvent/:id", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+app.get("/create", (req, res) => {
+  res.render("pages/create");
+});
+
+
+app.get('/preview-community', (req, res) => {
+  const { name, description, filters } = req.query;
+  // Split the filters string into an array if it's not empty
+  const filtersArray = filters ? filters.split(',') : [];
+  res.render('pages/previewCommunity', { name, description, filters: filtersArray });
+});
+
+
+app.post ('/create-community', async (req, res) => {
+  try {
+    const { name, description, filters } = req.body;
+
+    const filtersString = Array.isArray(filters) ? filters.join(',') : '';
+
+    const newCommunity = await db.query(
+      "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
+      [name, description, filtersString]
+    );
+      res.render("pages/discover", {message: "Community created"});
+    // res.status(201).{ message: "Community created"};
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
