@@ -61,7 +61,19 @@
     </div>
 
 
+    <script>
 
+
+        function previewCommunity()
+        {
+            const name = encodeURIComponent(document.getElementById('communityName').value);
+            const description = encodeURIComponent(document.getElementById('communityDescription').value);
+            const filters = Array.from(document.querySelectorAll('input[name="filters"]:checked')).map(checkbox => checkbox.value).join(',');
+        
+            window.location.href = `/preview-community?name=${name}&description=${description}&filters=${filters}`;
+        }
+        
+        </script>
 
 </body>
 
