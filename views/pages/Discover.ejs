@@ -12,7 +12,6 @@ include ('../partials/message') %>
       <div id="CommunityPageContainer">
         <div class="title">Community Page</div>
         <hr />
-        <form>
           <table class="table">
             <thead>
               <tr>
@@ -24,24 +23,25 @@ include ('../partials/message') %>
             </thead>
             <tbody>
               <% allCommunities.forEach(community => { %>
-                <tr>
+              <tr>
+                <form method="POST" action="<%- "/addUserToCommunity/" + community.communityid %>">
                   <!-- <td><%= community.communityid %></td> -->
                   <td><%= community.name %></td>
                   <td><%= community.description %></td>
                   <td>
-                    <button type="submit" class="btn btn-primary">Join</button>
+                    <button type="submit">Join</button>
                   </td>
-                </tr>
+                </form>
+              </tr>
               <% }); %>
             </tbody>
           </table>
-        </form>
+        
       </div>
 
       <div id="RandomEventContainer">
         <div class="title">Upcoming Events</div>
-        <hr/>
-        <form>
+        <hr />
           <table class="table">
             <thead>
               <tr>
@@ -57,7 +57,8 @@ include ('../partials/message') %>
             </thead>
             <tbody>
               <% allEvents.forEach(event => { %>
-                <tr>
+              <tr>
+                <form method="POST" action="<%- "/addUserToEvent/" + event.eventid %>">
                   <!-- <td><%= event.eventid %></td> -->
                   <td><%= event.name %></td>
                   <td><%= event.description %></td>
@@ -66,15 +67,37 @@ include ('../partials/message') %>
                   <td><%= event.location %></td>
                   <!-- <td><%= event.communityid %></td> -->
                   <td>
-                    <button type="submit" class="btn btn-primary">Join</button>
+                    <div class="popup" onclick="myFunction()">
+                      <button type="submit">Join</button>
+                      <span class="popuptext" id="myPopup">Event Joined!</span>
+                    </div>
                   </td>
-                </tr>
+                </form>
+              </tr>
               <% }); %>
             </tbody>
           </table>
-        </form>        
       </div>
     </div>
+    <script>
+      function myFunction() {
+        // const form = element.closest('.event-form');
+        // const popup2 = form.querySelector('.popup');
+        var popup = document.getElementById("myPopup");
+        
+        // popup2.classList.toggle('active');
+        // // Optionally, you can hide the popup after a delay
+        // setTimeout(() => {
+        //   popup2.classList.remove('active');
+        // }, 2000); // 2000 milliseconds (2 seconds)
+        popup.classList.toggle("show");
+        setTimeout(() => {
+            popup.classList.add("hide");
+        }, 600);
+        // popup.classList.toggle("show");
+        // popup.classList.add("hide");
+      }
+    </script>
   </main>
 </body>
 
