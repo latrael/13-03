@@ -33,7 +33,7 @@ describe("Server!", () => {
     chai
       .request(server)
       .post("/login")
-      .send({ username: "john_doe", password: "123"})
+      .send({ username: "luke", password: "password"})
       .end((err, res) => {
         expect(res).to.have.status(200); 
         expect(res.text).to.include('Successfully logged in');
@@ -47,7 +47,7 @@ describe("Server!", () => {
     chai
       .request(server)
       .post("/login")
-      .send({ username: "john_doe", password: "12345" })
+      .send({ username: "luke", password: "12345" })
       .end((err, res) => {
         expect(res).to.have.status(200); 
         expect(res.text).to.include('Incorrect password');
