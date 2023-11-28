@@ -149,14 +149,24 @@ app.post("/register", async (req, res) => {
         error: "danger",
       });
       //return res.status(401).json({ error: 'User already exists.' });
-    }
-    else if(user_exists){
-      res.render('pages/register', {message: 'Username already exists. Enter alternate username', error: 'danger'});
-    }
-    else{
-      const query = 'INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)';
-      await db.query(query, [req.body.fullName, req.body.email, req.body.username, hash]);
-      res.render('pages/login', {data: req.session.user, message: 'Successfully registered'});
+    } else if (user_exists) {
+      res.render("pages/register", {
+        message: "Username already exists. Enter alternate username",
+        error: "danger",
+      });
+    } else {
+      const query =
+        "INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)";
+      await db.query(query, [
+        req.body.fullName,
+        req.body.email,
+        req.body.username,
+        hash,
+      ]);
+      res.render("pages/login", {
+        data: req.session.user,
+        message: "Successfully registered",
+      });
     }
   } catch (error) {
     console.error("Error while registering user: " + error);
@@ -193,11 +203,13 @@ app.post("/login", async (req, res) => {
     console.log(password);
     console.log(user.password);
     console.log(match);
-    if(match == false){
-      console.log('Incorrect password');
-      res.render('pages/login', {message: 'Incorrect password', error: 'danger'});
-    }
-    else{
+    if (match == false) {
+      console.log("Incorrect password");
+      res.render("pages/login", {
+        message: "Incorrect password",
+        error: "danger",
+      });
+    } else {
       req.session.user = user;
       req.session.save();
       res.render("pages/profile", {
@@ -233,11 +245,162 @@ app.get("/profile", async (req, res) => {
       console.error("Error in /profile route:", error);
       res.status(500).send("Internal Server Error");
     }
+    const fquery = `
+    SELECT *
+    FROM friends
+    RIGHT JOIN users
+    ON friends.userIDB = users.userid
+    WHERE userIDA = $1`;
+    const friends = await db.query(fquery, [req.session.user.userid]);
+    const info = (Object.assign(req.session.user, friends));
+    console.log(info['0'].userIDB);
+    res.render("pages/profile", {
+      data: Object.assign(req.session.user, friends)
+    });
   }
 });
 
-app.get("/friends", (req, res) => {
-  res.render("pages/friends");
+app.get("/friends", async (req, res) => {
+  if(req.session.user == undefined){
+    res.render("pages/login")
+  }
+  else{
+    try{
+      const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
+       req.session.user.userid, 
+      ]);
+      console.log(friends);
+      if(!friends){
+        res.render("pages/friends", {
+          user: "empty",
+          friend: "no friends",
+          community: "empty",
+          empty: " ",
+        });
+      }
+      const community = {
+        name: undefined,
+        desciption: undefined,
+        communityid: undefined,
+      };
+      const find_communities = [];
+      var index = 0;
+      const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
+      for(i = 0; i < friends.length; i++){
+        const friend_community = await db.query(result, [friends[i].useridb,]);
+        for(j=0; j < friend_community.length; j++){
+          const community = {
+            name: friend_community[j].name,
+            desciption: friend_community[j].description,
+            communityid: friend_community[j].communityid,
+          };
+          find_communities[index] = community;
+          index = index + 1;
+        }
+      }
+        res.render("pages/friends", {
+          user: "empty",
+          friend: friends,
+          community: find_communities,
+          empty: " ",
+        });
+    }
+    catch (error) {
+      console.error("Error: " + error);
+    }
+  }
+});
+
+app.post("/user_search", async (req, res) =>{
+  try{
+      const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
+       req.session.user.userid, 
+      ]);
+      const community = {
+        name: undefined,
+        desciption: undefined,
+        communityid: undefined,
+      };
+      const find_communities = [];
+      var index = 0;
+      const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
+      for(i = 0; i < friends.length; i++){
+        const friend_community = await db.query(result, [friends[i].useridb,]);
+        for(j=0; j < friend_community.length; j++){
+          const community = {
+            name: friend_community[j].name,
+            desciption: friend_community[j].description,
+            communityid: friend_community[j].communityid,
+          };
+          find_communities[index] = community;
+          index = index + 1;
+        }
+      }
+    const users = await db.oneOrNone("SELECT * FROM users WHERE username = $1", [
+      req.body.user,
+    ]);
+    if(!users){
+      res.render("pages/friends", {
+        user: "NOT_FOUND",
+        friend: friends,
+        community: find_communities,
+        empty: " ",
+      });
+    }
+    else{
+      if(users.username == req.body.user){
+        var friend = false;
+        for(i = 0; i < friends.length; i++){
+          if(users.username == friends[i].username){
+            friend = true;
+          }
+        }
+        res.render("pages/friends", {
+          user: users,
+          friend: friends,
+          community: find_communities,
+          empty: friend,
+        });
+      }
+      else{
+        res.render("pages/friends", {
+          user: "empty",
+          friend: friends,
+          community: find_communities,
+          empty: " ",
+        });
+      }
+    }
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+ });
+
+app.post("/add_friend",async (req, res) =>{
+  console.log(req.body.userADD);
+  const user1 = req.session.user.userid;
+  try{
+    const query = "INSERT INTO friends (userIDA, userIDB, status) VALUES ($1, $2, $3) returning *";
+    await db.one(query, [user1, req.body.userADD, 'pending']);
+    res.redirect("/friends")
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
+app.post("/remove_friend",async (req, res) =>{
+  console.log(req.body.userREMOVE);
+  const user1 = req.session.user.userid;
+  try{
+    const query = "DELETE friends WHERE userIDB = $1 AND userIDA =$2";
+    await db.one(query, [req.body.userREMOVE,req.session.user.userid]);
+    res.redirect("/friends")
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
 });
 
 app.get("/discover", async (req, res) => {
@@ -248,21 +411,105 @@ app.get("/discover", async (req, res) => {
     // Fetch data from the database
     const communities = await db.any(allCommunitiesQuery);
     const events = await db.any(allEventsQuery);
-    console.log(communities, events)
-    
+    console.log(communities, events);
+
     // Render the EJS template with the retrieved data
-    res.render("pages/Discover", { allCommunities: communities, allEvents: events });
+    res.render("pages/Discover", {
+      allCommunities: communities,
+      allEvents: events,
+    });
   } catch (error) {
     console.error("Error in /discover route:", error);
     res.status(500).send("Internal Server Error");
   }
 });
 
+app.post("/addUserToCommunity/:id", async (req, res) => {
+  const communityId = req.params.id;
+  // console.log("req.body", communityId);
+  // const communityId = allCommunities;
+  // console.log(communityId);
+  const userId = req.session.user.userid;
+  const query = `INSERT INTO users_to_communities (userID, communityID) VALUES ($1, $2)`;
+  try {
+    await db.query(query, [userId, communityId]);
+    // console.log("community", communityId);
+    // console.log("User", req.session.user)
+    // console.log("userid", userId);
+    console.log("success");
+
+    setTimeout(() => {
+      res.redirect("/discover");
+    }, 4700); // 2000 milliseconds (2 seconds)
+    // res.render("pages/discover", { message: "User added to community" });
+    // res.status(200).send("User added to community");
+    // const allCommunitiesQuery = `SELECT * FROM communities`;
+    // const communityName = `SELECT name FROM communities WHERE communityID = ${communityId}`;
+    // const allEventsQuery = `SELECT * FROM events`;
+    /*
+    try {
+      // Fetch data from the database
+      const communities = await db.any(allCommunitiesQuery);
+      const events = await db.any(allEventsQuery);
+      // console.log(communities, events);
+
+      // Render the EJS template with the retrieved data
+
+      // res.render("pages/Discover", {
+      //   allCommunities: communities,
+      //   allEvents: events,
+      //   // message: "You joined " + communityName,
+      //   message: "You Joined Successfully!"
+      // });
+    } catch (error) {
+      console.error("Error in /discover route:", error);
+      res.status(500).send("Internal Server Error");
+    }
+    */
+  } catch (error) {
+    console.log("error:", error);
+    console.error("Error in /addUserToCommunity route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/addUserToEvent/:id", async (req, res) => {
+  const eventId = req.params.id;
+  // console.log("req.body", communityId);
+  // const communityId = allCommunities;
+  // console.log(communityId);
+  const userId = req.session.user.userid;
+  const query = `INSERT INTO users_to_events (userID, eventId) VALUES ($1, $2)`;
+  try {
+    await db.query(query, [userId, eventId]);
+    // console.log("Event", eventId);
+    // console.log("User", req.session.user)
+    // console.log("userid", userId);
+    console.log("success");
+
+    setTimeout(() => {
+      res.redirect("/discover");
+    }, 4700); // 2000 milliseconds (2 seconds)
+    // res.redirect("/discover");
+  } catch (error) {
+    console.log("error:", error);
+    console.error("Error in /addUserToEvent route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 app.get("/create", (req, res) => {
   res.render("pages/create");
 });
 
 
+app.get('/preview-community', (req, res) => {
+  const { name, description, filters } = req.query;
+  // Split the filters string into an array if it's not empty
+  const filtersArray = filters ? filters.split(',') : [];
+  res.render('pages/previewCommunity', { name, description, filters: filtersArray });
+});
 
 
 app.post ('/create-community', async (req, res) => {
@@ -275,13 +522,13 @@ app.post ('/create-community', async (req, res) => {
       "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
       [name, description, filtersString]
     );
-
-    res.status(201).json({ message: "Community created"});
+      res.render("pages/discover", {message: "Community created"});
+    // res.status(201).{ message: "Community created"};
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
-})
+});
 
 
 // *****************************************************
