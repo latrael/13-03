@@ -70,8 +70,8 @@ app.get("/", async (req, res) => {
       error: "danger",
     });
   } else {
-    const userCommunitiesQuery = `
-      SELECT communities.name 
+    const userCommunitiesQuery = 
+    `SELECT communities.name 
       FROM users_to_communities 
       JOIN communities 
       ON users_to_communities.communityID = communities.communityID 
@@ -90,7 +90,7 @@ app.get("/", async (req, res) => {
       res.status(500).send('Internal Server Error');
     }
   }
-});
+}); 
 
 app.get("/welcome", (req, res) => {
   res.json({ status: "success", message: "Welcome!" });
@@ -158,8 +158,6 @@ app.post("/login", async (req, res) => {
       req.body.username,
     ]);
 
-    console.log('User object before setting session:', user);
-
     if (!user) {
       res.render("pages/login", { message: "User not found", error: "danger" });
     }
@@ -208,6 +206,7 @@ app.get("/profile", async (req, res) => {
     WHERE userIDA = $1`;
     const friends = await db.query(fquery, [req.session.user.userid]);
     const info = (Object.assign(req.session.user, friends));
+    console.log(info['1'].useridb)
     res.render("pages/profile", {
       data: Object.assign(req.session.user, friends)
     });
@@ -243,20 +242,21 @@ app.get("/create", (req, res) => {
 
 
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
 app.post ('/create-community', async (req, res) => {
   try {
     const { name, description, filters } = req.body;
 
-    const filtersString = filters.join(',');
+    const filtersString = Array.isArray(filters) ? filters.join(',') : '';
 
     const newCommunity = await db.query(
       "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
       [name, description, filtersString]
     );
+
+    res.status(201).json({ message: "Community created"});
   } catch (err) {
     console.error(err.message);
+    res.status(500).send("Server error");
   }
 })
 
