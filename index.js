@@ -62,6 +62,33 @@ app.use(
 // *****************************************************
 // TODO - Include your API routes here
 
+// standalone functions *****************
+async function loadProfile(arg) {
+  const fquery = `
+  SELECT *
+  FROM friends
+  RIGHT JOIN users
+  ON friends.useridB = users.userid
+  WHERE userIDA = $1`;
+  const cquery = `
+  SELECT *
+  FROM users_to_communities
+  RIGHT JOIN communities
+  ON users_to_communities.communityID = communities.communityID
+  WHERE users_to_communities.userID = $1`;
+  const friendInfo = await db.query(fquery, [arg.userid]);
+  const userInfo = arg;
+  const commInfo = await db.query(cquery, [arg.userid]);
+
+
+    return {
+      uList: userInfo,
+      fList: friendInfo,
+      cList: commInfo
+    };
+}
+// ****************************************************
+
 app.get("/", async (req, res) => {
   console.log(req.session.user);
   if (req.session.user == undefined) {
@@ -173,9 +200,8 @@ app.post("/login", async (req, res) => {
     else{
       req.session.user = user;
       req.session.save();
-      console.log(req.session);
       res.render("pages/profile", {
-        data: req.session.user,
+        data: await loadProfile(req.session.user),
         message: "Successfully logged in",
       });
     }
@@ -198,18 +224,15 @@ app.get("/profile", async (req, res) => {
       error: "danger",
     });
   } else {
-    const fquery = `
-    SELECT *
-    FROM friends
-    RIGHT JOIN users
-    ON friends.useridB = users.userid
-    WHERE userIDA = $1`;
-    const friends = await db.query(fquery, [req.session.user.userid]);
-    const info = (Object.assign(req.session.user, friends));
-    console.log(info['1'].useridb)
-    res.render("pages/profile", {
-      data: Object.assign(req.session.user, friends)
-    });
+    try{
+      res.render("pages/profile", {
+        data: await loadProfile(req.session.user)
+      });
+    }
+    catch(error){
+      console.error("Error in /profile route:", error);
+      res.status(500).send("Internal Server Error");
+    }
   }
 });
 
