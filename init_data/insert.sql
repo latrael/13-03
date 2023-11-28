@@ -3,7 +3,6 @@ INSERT INTO users (userID, fullName, username, password, email) VALUES
   (92, 'John Doe', 'john_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','john@example.com'),
   (93, 'Jane Doe', 'jane_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','jane@example.com');
 
-
 INSERT into communities (communityID, name, description) VALUES 
 (1, 'Adobe Creative Club', 'This is a place for design and learning the art of Adobe softwares. Sharing knowledge and experience around campus about Adobe software and connecting with students to better skills.'),
 (2, 'African Student Association', 'Our organization brings African and black-identifying people together on campus since there is such a small percentage of us on campus'),

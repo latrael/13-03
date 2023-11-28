@@ -1,0 +1,84 @@
+<%- include ('../partials/header') %> 
+<%- include ('../partials/menu') %>
+
+<style>
+    .community-header {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .community-name {
+        margin-right: 10px;
+    }
+    .filters-list {
+        font-size: 0.8em;
+        color: #666;
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 5px;
+    }
+    .separator {
+        border: 0;
+        height: 1px;
+        background: #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .calendar-container {
+        margin-top: 20px;
+    }
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-gap: 5px;
+        text-align: center;
+    }
+    .calendar-header, .calendar-day {
+        border: 1px solid #ddd;
+        padding: 15px;
+        min-height: 50px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+    .calendar-header {
+        background-color: #3EB489;
+        color: white;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class ="community-details">
+            <h1> <%= name %></h1>
+            <ul class="filters-list">
+                <% filters.forEach(function(filter) { %>
+                    <li><%= filter %></li>
+                <% }); %>
+            </ul>
+        </div>
+        <p> <%= description %></p>
+
+        <hr class = 'separator'>
+
+        <div class="calendar-container">
+            <div class="calendar">
+                <div class="calendar-header">Sun</div>
+                <div class="calendar-header">Mon</div>
+                <div class="calendar-header">Tue</div>
+                <div class="calendar-header">Wed</div>
+                <div class="calendar-header">Thu</div>
+                <div class="calendar-header">Fri</div>
+                <div class="calendar-header">Sat</div>
+                <!-- Add divs for each day of the month, e.g., <div class="calendar-day">1</div> -->
+                <% for (let i = 1; i <= 31; i++) { %>
+                    <div class="calendar-day"><%= i %></div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+
+<%- include ('../partials/footer') %>
