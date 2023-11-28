@@ -240,6 +240,12 @@ app.get("/create", (req, res) => {
 });
 
 
+app.get('/preview-community', (req, res) => {
+  const { name, description, filters } = req.query;
+  // Split the filters string into an array if it's not empty
+  const filtersArray = filters ? filters.split(',') : [];
+  res.render('pages/previewCommunity', { name, description, filters: filtersArray });
+});
 
 
 app.post ('/create-community', async (req, res) => {
@@ -252,8 +258,8 @@ app.post ('/create-community', async (req, res) => {
       "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
       [name, description, filtersString]
     );
-
-    res.status(201).json({ message: "Community created"});
+      res.render("pages/discover", {message: "Community created"});
+    // res.status(201).{ message: "Community created"};
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
