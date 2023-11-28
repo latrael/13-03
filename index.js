@@ -96,14 +96,24 @@ app.post("/register", async (req, res) => {
         error: "danger",
       });
       //return res.status(401).json({ error: 'User already exists.' });
-    }
-    else if(user_exists){
-      res.render('pages/register', {message: 'Username already exists. Enter alternate username', error: 'danger'});
-    }
-    else{
-      const query = 'INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)';
-      await db.query(query, [req.body.fullName, req.body.email, req.body.username, hash]);
-      res.render('pages/login', {data: req.session.user, message: 'Successfully registered'});
+    } else if (user_exists) {
+      res.render("pages/register", {
+        message: "Username already exists. Enter alternate username",
+        error: "danger",
+      });
+    } else {
+      const query =
+        "INSERT INTO users (fullName, email, username, password) VALUES ($1, $2, $3, $4)";
+      await db.query(query, [
+        req.body.fullName,
+        req.body.email,
+        req.body.username,
+        hash,
+      ]);
+      res.render("pages/login", {
+        data: req.session.user,
+        message: "Successfully registered",
+      });
     }
   } catch (error) {
     console.error("Error while registering user: " + error);
@@ -140,11 +150,13 @@ app.post("/login", async (req, res) => {
     console.log(password);
     console.log(user.password);
     console.log(match);
-    if(match == false){
-      console.log('Incorrect password');
-      res.render('pages/login', {message: 'Incorrect password', error: 'danger'});
-    }
-    else{
+    if (match == false) {
+      console.log("Incorrect password");
+      res.render("pages/login", {
+        message: "Incorrect password",
+        error: "danger",
+      });
+    } else {
       req.session.user = user;
       req.session.save();
       console.log(req.session);
@@ -188,16 +200,92 @@ app.get("/discover", async (req, res) => {
     // Fetch data from the database
     const communities = await db.any(allCommunitiesQuery);
     const events = await db.any(allEventsQuery);
-    console.log(communities, events)
-    
+    console.log(communities, events);
+
     // Render the EJS template with the retrieved data
-    res.render("pages/Discover", { allCommunities: communities, allEvents: events });
+    res.render("pages/Discover", {
+      allCommunities: communities,
+      allEvents: events,
+    });
   } catch (error) {
     console.error("Error in /discover route:", error);
     res.status(500).send("Internal Server Error");
   }
 });
 
+app.post("/addUserToCommunity/:id", async (req, res) => {
+  const communityId = req.params.id;
+  // console.log("req.body", communityId);
+  // const communityId = allCommunities;
+  // console.log(communityId);
+  const userId = req.session.user.userid;
+  const query = `INSERT INTO users_to_communities (userID, communityID) VALUES ($1, $2)`;
+  try {
+    await db.query(query, [userId, communityId]);
+    // console.log("community", communityId);
+    // console.log("User", req.session.user)
+    // console.log("userid", userId);
+    console.log("success");
+
+    setTimeout(() => {
+      res.redirect("/discover");
+    }, 4700); // 2000 milliseconds (2 seconds)
+    // res.render("pages/discover", { message: "User added to community" });
+    // res.status(200).send("User added to community");
+    // const allCommunitiesQuery = `SELECT * FROM communities`;
+    // const communityName = `SELECT name FROM communities WHERE communityID = ${communityId}`;
+    // const allEventsQuery = `SELECT * FROM events`;
+    /*
+    try {
+      // Fetch data from the database
+      const communities = await db.any(allCommunitiesQuery);
+      const events = await db.any(allEventsQuery);
+      // console.log(communities, events);
+
+      // Render the EJS template with the retrieved data
+
+      // res.render("pages/Discover", {
+      //   allCommunities: communities,
+      //   allEvents: events,
+      //   // message: "You joined " + communityName,
+      //   message: "You Joined Successfully!"
+      // });
+    } catch (error) {
+      console.error("Error in /discover route:", error);
+      res.status(500).send("Internal Server Error");
+    }
+    */
+  } catch (error) {
+    console.log("error:", error);
+    console.error("Error in /addUserToCommunity route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/addUserToEvent/:id", async (req, res) => {
+  const eventId = req.params.id;
+  // console.log("req.body", communityId);
+  // const communityId = allCommunities;
+  // console.log(communityId);
+  const userId = req.session.user.userid;
+  const query = `INSERT INTO users_to_events (userID, eventId) VALUES ($1, $2)`;
+  try {
+    await db.query(query, [userId, eventId]);
+    // console.log("Event", eventId);
+    // console.log("User", req.session.user)
+    // console.log("userid", userId);
+    console.log("success");
+
+    setTimeout(() => {
+      res.redirect("/discover");
+    }, 4700); // 2000 milliseconds (2 seconds)
+    // res.redirect("/discover");
+  } catch (error) {
+    console.log("error:", error);
+    console.error("Error in /addUserToEvent route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

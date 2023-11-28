@@ -36,6 +36,13 @@ CREATE TABLE events (
     location TEXT
 );
 
+CREATE TABLE users_to_events (
+    userID INTEGER,
+    eventID INTEGER,
+    FOREIGN KEY (userID) REFERENCES users(userID),
+    FOREIGN KEY (eventID) REFERENCES events(eventID)
+);
+
 CREATE TABLE communities_to_events (
     communityToEventID SERIAL PRIMARY KEY,
     communityID INTEGER,
