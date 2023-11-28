@@ -5,8 +5,7 @@
 <head>
     <style>
         div.scroll {
-          width: 50%;
-          height: 35rem;
+          height: 25rem;
           overflow-x: hidden;
           overflow-y: auto;
           text-align: center;
@@ -18,58 +17,132 @@
 <body>
     <main>
         <div class="row">
-            <div class="column" style="width: 60%;">
-                <div class="container-fluid">
-                    <h1 style="display: inline-block;" >Friends</h1>
+            <div class="column" style="width: 50%;">
+                <div class="list-group" style="width: 75%; padding: 5%; display: none;" id="communities_d">
+                    <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends Communities</h5>
+                    <div class="scroll">
+                        <% for(var i=0; i < community.length; i++) {%>
+                            <a href="#" class="list-group-item list-group-item-action"><%= community[i].name %></a>
+                         <% } %>
+                    </div>
                 </div>
-            </div>
-            <div class="column" style="width: 40%;">
-                <div class="container-fluid">
-                    <form action="add friend" method="POST">
-                        <div class="form-group" sty>
-                            <label for="friend_search">Username</label>
-                            <input type="email" class="form-control" id="friend_search" aria-describedby="search_help" placeholder="Enter username">
-                            <small id="search_help" class="form-text text-muted">Please enter the username of the user you wish to search</small>
-                            <!-- this should either display your friends profile and communities or prompt you to add them as a friend after
-                            the search goes through-->
-                        </div>
-                      <button type="submit" class="btn btn-primary">Search</button>
-                    </form>
+                <div class="list-group" style="width: 75%; padding: 5%;" id="friends_d">
+                    <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends</h5>
+                    <div class="scroll">
+                       <% if(friend.length < 10){ %>
+                            <% for(var i=0; i < friend.length; i++) {%>
+                                <a href="#" class="list-group-item list-group-item-action"><%= friend[i].fullname %></a>
+                             <% } %>
+                             <% for(var i=0; i < (9 - friend.length); i++) {%>
+                                <a href="#" class="list-group-item list-group-item-action"></a>
+                             <% } %>
+
+                        <% } else { %>
+                            <% for(var i=0; i < friend.length; i++) {%>
+                                <a href="#" class="list-group-item list-group-item-action"><%= friend[i].useridb %></a>
+                             <% } %>
+                       <% } %>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
+
+                <script>
+                    function display_communities() {
+                        var x = document.getElementById("friends_d");
+                        var y = document.getElementById("communities_d");
+                        if (y.style.display === "block") {
+                            x.style.display = "none";
+                            y.style.display = "block";
+                        }
+                        else{
+                            x.style.display = "none";
+                            y.style.display = "block";
+                        }
+                    }
+
+                    function display_friends() {
+                        var x = document.getElementById("friends_d");
+                        var y = document.getElementById("communities_d");
+                        if (x.style.display === "block") {
+                            y.style.display = "none";
+                            x.style.display = "block";
+                        }
+                        else{
+                            x.style.display = "block"
+                            y.style.display = "none";
+                        }
+                    }
+
+                    function hide_friends_card() {
+                        document.getElementById("adding_friend").style.display ="none";
+                    }
+
+                    function display_friends_card() {
+                        var x = document.getElementById("adding_friend");
+                        var y = document.getElementById("search");
+                        y.style.display = "block";
+                        x.style.display = "none";
+                    }
+                </script>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="display_friends()" checked>
                     <label class="form-check-label" for="flexRadioDefault1">
                       Friends
                     </label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="display_communities()">
                     <label class="form-check-label" for="flexRadioDefault2">
-                      Friends communities
+                      Communities
                     </label>
                   </div>
-                <div class="scroll">
-                    <table class="table">
-                        <tbody>
-                            <% for(var i=0; i < 20; i++) {%>
-                                <tr>
-                                  <td>
-                                   <p>community</p>
-                                  </td>
-                                </tr>
-                             <% } %>
-                        </tbody>
-                    </table>
+            </div>
+            <div class="column" style="width: 50%;">
+                <div class="row">
+                    <div class="col">
+                        <div class="container-fluid">
+                            <form id="search" action="user_search" method="POST">
+                                <div class="form-group">
+                                    <label for="user">Username</label>
+                                    <input type="text" class="form-control" id="user" name="user" aria-describedby="search_help" placeholder="Enter username" style="width: 75%; display: inline-block;">
+                                    <button type="submit" class="btn btn-primary" onclick="display_friends_card()">Search</button>
+                                    <small id="search_help" class="form-text text-muted">Please enter the username of the user you wish to search</small>
+                                    <!-- this should either display your friends profile and communities or prompt you to add them as a friend after
+                                    the search goes through-->
+                                </div>
+                            </form>
+                            <% if(user != "empty"){ %>
+                                <div class="card" style="width: 18rem;" id="adding_friend">
+                                    <div class="card-body">
+                                        <% if(empty == true){ %>
+                                            <form action="remove_friend" method="POST">
+                                                <div class="form-group">
+                                                    <h5 class="card-title"><%= user.fullname %></h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                    <input type="hidden" id="userADD" name="userREMOVE" value="<%= user.userid %>">
+                                                    <button type="submit" class="btn btn-primary">Remove Friend</button> 
+                                                </div> 
+                                            </form>
+                                        <% } else{ %>
+                                            <form  action="add_friend" method="POST">
+                                                <div class="form-group">
+                                                    <h5 class="card-title"><%= user.fullname %></h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                    <input type="hidden" id="userADD" name="userADD" value="<%= user.userid %>">
+                                                    <button type="submit" class="btn btn-primary">Add Friend</button>
+                                                </div>
+                                                
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="col">
+                            <p style="padding-top: 25%;">This is where the event calendar goes</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <p style="padding-top: 25%;">This is where the event calendar goes</p>
-            </div>
-        </div>
     </main>
 </body>
 <%- include ('../partials/footer') %>
