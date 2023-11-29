@@ -4,6 +4,7 @@
 
 const express = require("express"); // To build an application server or API
 const app = express();
+const { Pool } = require('pg');
 const pgp = require("pg-promise")(); // To connect to the Postgres DB from the node server
 const bodyParser = require("body-parser");
 const session = require("express-session"); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
@@ -62,7 +63,7 @@ app.use(
 // *****************************************************
 // TODO - Include your API routes here
 
-// standalone functions *****************
+// functions *****************
 async function loadProfile(arg) {
   const fquery = `
   SELECT *
@@ -259,6 +260,32 @@ app.get("/profile", async (req, res) => {
     });
   }
 });
+  }
+});
+
+const pool = new Pool({
+  host: "db", // the database server
+  port: 5432, // the database port
+  database: process.env.POSTGRES_DB, // the database name
+  user: process.env.POSTGRES_USER, // the user account to connect with
+  password: process.env.POSTGRES_PASSWORD, // the password of the user account
+});
+
+app.get("/friendProfile/:friendID", async (req, res) => {
+    try{
+      const profile = req.params.friendID;
+      const p = 'SELECT * FROM users WHERE userID = $1';
+      const { rows } = await pool.query(p, [profile]);
+      console.log(rows[0]);
+      res.render("pages/profile", {
+        data: await loadProfile(rows[0])
+      });
+    }
+    catch(error){
+      console.error("Error in /profile route:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
 
 app.get("/friends", async (req, res) => {
   if(req.session.user == undefined){
