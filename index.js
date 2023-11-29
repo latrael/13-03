@@ -246,20 +246,6 @@ app.get("/profile", async (req, res) => {
       console.error("Error in /profile route:", error);
       res.status(500).send("Internal Server Error");
     }
-    const fquery = `
-    SELECT *
-    FROM friends
-    RIGHT JOIN users
-    ON friends.userIDB = users.userid
-    WHERE userIDA = $1`;
-    const friends = await db.query(fquery, [req.session.user.userid]);
-    const info = (Object.assign(req.session.user, friends));
-    console.log(info['0'].userIDB);
-    res.render("pages/profile", {
-      data: Object.assign(req.session.user, friends)
-    });
-  }
-});
   }
 });
 
@@ -286,6 +272,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
       res.status(500).send("Internal Server Error");
     }
   });
+  
 
 app.get("/friends", async (req, res) => {
   if(req.session.user == undefined){
