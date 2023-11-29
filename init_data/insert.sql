@@ -25,3 +25,7 @@ INSERT INTO users_to_communities(userID, communityID) VALUES
 (91,2),
 (91,3),
 (91,4);
+
+INSERT INTO users_to_events(userID, eventID) VALUES
+(91, 1),
+(91, 2);

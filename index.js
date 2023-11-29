@@ -77,15 +77,23 @@ async function loadProfile(arg) {
   RIGHT JOIN communities
   ON users_to_communities.communityID = communities.communityID
   WHERE users_to_communities.userID = $1`;
+  const equery = `
+  SELECT *
+  FROM users_to_events
+  RIGHT JOIN events
+  ON users_to_events.eventID = events.eventID
+  WHERE users_to_events.userID = $1`;
   const friendInfo = await db.query(fquery, [arg.userid]);
   const userInfo = arg;
   const commInfo = await db.query(cquery, [arg.userid]);
+  const eventInfo = await db.query(equery, [arg.userid]);
 
 
     return {
       uList: userInfo,
       fList: friendInfo,
-      cList: commInfo
+      cList: commInfo,
+      eList: eventInfo
     };
 }
 // ****************************************************
@@ -263,7 +271,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
       const p = 'SELECT * FROM users WHERE userID = $1';
       const { rows } = await pool.query(p, [profile]);
       console.log(rows[0]);
-      res.render("pages/profile", {
+      res.render("pages/friendProfile", {
         data: await loadProfile(rows[0])
       });
     }
