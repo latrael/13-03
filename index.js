@@ -282,148 +282,168 @@ app.get("/friendProfile/:friendID", async (req, res) => {
   });
   
 
-app.get("/friends", async (req, res) => {
-  if(req.session.user == undefined){
-    res.render("pages/login")
-  }
-  else{
-    try{
-      const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
-       req.session.user.userid, 
-      ]);
-      console.log(friends);
-      if(!friends){
-        res.render("pages/friends", {
-          user: "empty",
-          friend: "no friends",
-          community: "empty",
-          empty: " ",
-        });
-      }
-      const community = {
-        name: undefined,
-        desciption: undefined,
-        communityid: undefined,
-      };
-      const find_communities = [];
-      var index = 0;
-      const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
-      for(i = 0; i < friends.length; i++){
-        const friend_community = await db.query(result, [friends[i].useridb,]);
-        for(j=0; j < friend_community.length; j++){
-          const community = {
-            name: friend_community[j].name,
-            desciption: friend_community[j].description,
-            communityid: friend_community[j].communityid,
-          };
-          find_communities[index] = community;
-          index = index + 1;
+  app.get("/friends", async (req, res) => {
+    if(req.session.user == undefined){
+      res.render("pages/login")
+    }
+    else{
+      try{
+        const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
+         req.session.user.userid, 
+        ]);
+        if(!friends){
+          res.render("pages/friends", {
+            user: "empty",
+            friend: "no friends",
+            community: "empty",
+            empty: " ",
+          });
         }
+        const community = {
+          name: undefined,
+          desciption: undefined,
+          communityid: undefined,
+        };
+        const find_communities = [];
+        var index = 0;
+        const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
+        for(i = 0; i < friends.length; i++){
+          const friend_community = await db.query(result, [friends[i].useridb,]);
+          for(j=0; j < friend_community.length; j++){
+            const community = {
+              name: friend_community[j].name,
+              desciption: friend_community[j].description,
+              communityid: friend_community[j].communityid,
+            };
+            find_communities[index] = community;
+            index = index + 1;
+          }
+        }
+          res.render("pages/friends", {
+            user: "empty",
+            friend: friends,
+            community: find_communities,
+            empty: " ",
+          });
       }
+      catch (error) {
+        console.error("Error: " + error);
+      }
+    }
+  });
+  
+  app.post("/user_search", async (req, res) =>{
+    try{
+        const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
+         req.session.user.userid, 
+        ]);
+        const community = {
+          name: undefined,
+          desciption: undefined,
+          communityid: undefined,
+        };
+        const find_communities = [];
+        var index = 0;
+        const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
+        for(i = 0; i < friends.length; i++){
+          const friend_community = await db.query(result, [friends[i].useridb,]);
+          for(j=0; j < friend_community.length; j++){
+            const community = {
+              name: friend_community[j].name,
+              desciption: friend_community[j].description,
+              communityid: friend_community[j].communityid,
+            };
+            find_communities[index] = community;
+            index = index + 1;
+          }
+        }
+      const users = await db.oneOrNone("SELECT * FROM users WHERE username = $1", [
+        req.body.user,
+      ]);
+      if(!users){
         res.render("pages/friends", {
-          user: "empty",
+          user: "NOT_FOUND",
           friend: friends,
           community: find_communities,
           empty: " ",
         });
+      }
+      else{
+        if(users.username == req.body.user){
+          var friend = "false";
+          for(i = 0; i < friends.length; i++){
+            if(users.username == friends[i].username){
+              if(friends[i].status == "friends"){
+                friend = "true";
+              }
+              else{
+                friend = "pending";
+              }
+            }
+          }
+          res.render("pages/friends", {
+            user: users,
+            friend: friends,
+            community: find_communities,
+            empty: friend,
+          });
+        }
+        else{
+          res.render("pages/friends", {
+            user: "empty",
+            friend: friends,
+            community: find_communities,
+            empty: " ",
+          });
+        }
+      }
     }
     catch (error) {
       console.error("Error: " + error);
     }
-  }
-});
-
-app.post("/user_search", async (req, res) =>{
-  try{
-      const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
-       req.session.user.userid, 
-      ]);
-      const community = {
-        name: undefined,
-        desciption: undefined,
-        communityid: undefined,
-      };
-      const find_communities = [];
-      var index = 0;
-      const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
-      for(i = 0; i < friends.length; i++){
-        const friend_community = await db.query(result, [friends[i].useridb,]);
-        for(j=0; j < friend_community.length; j++){
-          const community = {
-            name: friend_community[j].name,
-            desciption: friend_community[j].description,
-            communityid: friend_community[j].communityid,
-          };
-          find_communities[index] = community;
-          index = index + 1;
-        }
-      }
-    const users = await db.oneOrNone("SELECT * FROM users WHERE username = $1", [
-      req.body.user,
-    ]);
-    if(!users){
-      res.render("pages/friends", {
-        user: "NOT_FOUND",
-        friend: friends,
-        community: find_communities,
-        empty: " ",
-      });
+   });
+  
+  app.post("/add_friend",async (req, res) =>{
+    const user1 = req.session.user.userid;
+    try{
+      const query = "INSERT INTO friends (userIDA, userIDB, status) VALUES ($1, $2, $3) returning *";
+      await db.one(query, [user1, req.body.userADD, 'sent']);
+      const query2 = "INSERT INTO friends (userIDA, userIDB, status) VALUES ($1, $2, $3) returning *";
+      await db.one(query2, [req.body.userADD,user1, 'pending']);
+      res.redirect("/friends")
     }
-    else{
-      if(users.username == req.body.user){
-        var friend = false;
-        for(i = 0; i < friends.length; i++){
-          if(users.username == friends[i].username){
-            friend = true;
-          }
-        }
-        res.render("pages/friends", {
-          user: users,
-          friend: friends,
-          community: find_communities,
-          empty: friend,
-        });
-      }
-      else{
-        res.render("pages/friends", {
-          user: "empty",
-          friend: friends,
-          community: find_communities,
-          empty: " ",
-        });
-      }
+    catch (error) {
+      console.error("Error: " + error);
     }
-  }
-  catch (error) {
-    console.error("Error: " + error);
-  }
- });
-
-app.post("/add_friend",async (req, res) =>{
-  console.log(req.body.userADD);
-  const user1 = req.session.user.userid;
-  try{
-    const query = "INSERT INTO friends (userIDA, userIDB, status) VALUES ($1, $2, $3) returning *";
-    await db.one(query, [user1, req.body.userADD, 'pending']);
-    res.redirect("/friends")
-  }
-  catch (error) {
-    console.error("Error: " + error);
-  }
-});
-
-app.post("/remove_friend",async (req, res) =>{
-  console.log(req.body.userREMOVE);
-  const user1 = req.session.user.userid;
-  try{
-    const query = "DELETE friends WHERE userIDB = $1 AND userIDA =$2";
-    await db.one(query, [req.body.userREMOVE,req.session.user.userid]);
-    res.redirect("/friends")
-  }
-  catch (error) {
-    console.error("Error: " + error);
-  }
-});
+  });
+  
+  app.post("/accept_friend",async (req, res) =>{
+    const user1 = req.session.user.userid;
+    try{
+      const query = "UPDATE friends SET status = 'friends' WHERE userIDA = $1 AND userIDB = $2 returning *";
+      await db.one(query, [user1, req.body.userid]);
+      const query2 = "UPDATE friends SET status = 'friends' WHERE userIDA = $1 AND userIDB = $2 returning *";
+      await db.one(query2, [req.body.userid,user1]);
+      res.redirect("/friends")
+    }
+    catch (error) {
+      console.error("Error: " + error);
+    }
+  });
+  
+  app.post("/remove_friend",async (req, res) =>{
+    try{
+      const query = "DELETE FROM friends WHERE userIDB = $1 AND userIDA =$2 returning *";
+      await db.one(query, [req.body.userid,req.session.user.userid]);
+      const query2 = "DELETE FROM friends WHERE userIDA = $1 AND userIDB =$2 returning *";
+      await db.one(query2, [req.body.userid,req.session.user.userid]);
+      res.redirect("/friends")
+    }
+    catch (error) {
+      console.error("Error: " + error);
+    }
+  });
+  
 
 app.get("/discover", async (req, res) => {
   // res.render("pages/Discover");
