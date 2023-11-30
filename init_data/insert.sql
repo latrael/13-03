@@ -1,7 +1,10 @@
 INSERT INTO users (userID, fullName, username, password, email) VALUES
   (91, 'Luke Campbell', 'luke', '$2a$12$XSHJPtIFcTQi4Qlbb5ov/O2I9nfeUNtOEjf3fwlYvpBmRhUG5pcxq', 'luke@gmail.com'),
   (92, 'John Doe', 'john_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','john@example.com'),
-  (93, 'Jane Doe', 'jane_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','jane@example.com');
+  (93, 'Jane Doe', 'jane_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','jane@example.com'),
+  (94, 'Bob Smith', 'bob_smith', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','bob@example.com'),
+  (95, 'Test', 'testing', '$2b$10$/dt5ujF.HnwpJ7Cob4rUo.BnzLomXUsb7i8VmG8jA1rmeMrvsZqfm','testing@colorado.edu'),
+  (96, 'Jacob Stiegler', 'jacob', '$2b$10$/dt5ujF.HnwpJ7Cob4rUo.BnzLomXUsb7i8VmG8jA1rmeMrvsZqfm','jast5595@colorado.edu');
 
 INSERT into communities (communityID, name, description) VALUES 
 (1, 'Adobe Creative Club', 'This is a place for design and learning the art of Adobe softwares. Sharing knowledge and experience around campus about Adobe software and connecting with students to better skills.'),
@@ -16,9 +19,19 @@ INSERT INTO events (eventID, name, description, date, location) VALUES
 (4, 'Zen Meditation', 'Interested in learning to meditate? Looking to unwind at the end of a busy day? Already have a practice and hoping to find others who share your passion for zazen? For CU students, staff, and faculty, come learn about the way of Zen. Get to know your true self. We will sit for 20 minutes, then have a brief discussion about Zen practice and how we can improve our sense of wellbeing and balance by meditating.
 Each Thursday this semester, meditation will be led by Dr. Sigman Myoshin Byrd, professor in the Program for Writing and Rhetoric, a 14-year zazen practitioner, member of the Eon Zen Center in Boulder and student of Sensei Paul Gyodo Agostinelli.', 'Thursday, November 16 at 6:00pm to 7:00pm', 'UMC 411');
 
-INSERT INTO friends(friendshipID, userIDA, userIDB, status) VALUES
-(1, 91, 92, 'friends'),
-(2, 91, 93, 'friends');
+INSERT INTO friends(userIDA, userIDB, status) VALUES
+(91, 92, 'friends'),
+(92, 91, 'friends'),
+(91, 93, 'friends'),
+(93, 91, 'friends'),
+(92, 96, 'friends'),
+(96, 92, 'friends'),
+(96, 93, 'friends'),
+(93, 96, 'friends'),
+(95, 96, 'sent'),
+(96, 95, 'pending'),
+(96, 94, 'sent'),
+(94, 96, 'pending');
 
 INSERT INTO users_to_communities(userID, communityID) VALUES
 (91,1),

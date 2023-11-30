@@ -14,36 +14,86 @@
       </style>
 </head>
 
-<body>
+<body onload="loadCommunityCalendar2()">
     <main>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                </div>
+                <div class="modal-body">
+                ...
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            </div>
+        </div>
         <div class="row">
             <div class="column" style="width: 50%;">
                 <div class="list-group" style="width: 75%; padding: 5%; display: none;" id="communities_d">
                     <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends Communities</h5>
                     <div class="scroll">
                         <% for(var i=0; i < community.length; i++) {%>
-                            <a href="#" class="list-group-item list-group-item-action"><%= community[i].name %></a>
+                            <a href="#" style=" text-align: left;" class="list-group-item list-group-item-action"><%= community[i].name %></a>
                          <% } %>
                     </div>
                 </div>
                 <div class="list-group" style="width: 75%; padding: 5%;" id="friends_d">
                     <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends</h5>
                     <div class="scroll">
-                       <% if(friend.length < 10){ %>
                             <% for(var i=0; i < friend.length; i++) {%>
-                                <a href="#" class="list-group-item list-group-item-action"><%= friend[i].fullname %></a>
+                               <% if(friend[i].status == "pending"){ %>
+                                <form action="accept_friend" method="POST">
+                                    <div class="form-group">
+                                        <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
+                                        <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %></button>
+                                        <button type="submit" name="accept" id="accept" class="btn btn-primary" style="width: 19%; display: inline-block;" >Accept</button>
+                                        <button type="submit" formaction="remove_friend" name="decline" id="decline" class="btn btn-primary" style="width: 5%; display: inline-block; padding-left: 0%; padding-right: 0%;" >X</button>
+                                    </div> 
+                                </form>
+                                <% } %>
                              <% } %>
-                             <% for(var i=0; i < (9 - friend.length); i++) {%>
-                                <a href="#" class="list-group-item list-group-item-action"></a>
-                             <% } %>
-
-                        <% } else { %>
-                            <% for(var i=0; i < friend.length; i++) {%>
-                                <a href="#" class="list-group-item list-group-item-action"><%= friend[i].useridb %></a>
-                             <% } %>
-                       <% } %>
+                             <% for(var i=0; i < friend.length; i++) {%>
+                                <% if(friend[i].status == "friends"){ %>
+                                    <form action="remove_friend" method="POST">
+                                        <div class="form-group">
+                                            <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
+                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %></button>
+                                            <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Remove</button>
+                                        </div> 
+                                    </form>
+                                 <% } %>
+                              <% } %>
+                              <% for(var i=0; i < friend.length; i++) {%>
+                                <% if(friend[i].status == "sent"){ %>
+                                    <form action="remove_friend" method="POST">
+                                        <div class="form-group">
+                                            <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
+                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %> (Pending)</button>
+                                            <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >X</button>
+                                        </div> 
+                                    </form>
+                                 <% } %>
+                              <% } %>
                     </div>
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="display_friends()" checked>
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      Friends
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="display_communities()">
+                    <label class="form-check-label" for="flexRadioDefault2">
+                      Communities
+                    </label>
+                  </div>
 
                 <script>
                     function display_communities() {
@@ -82,19 +132,36 @@
                         y.style.display = "block";
                         x.style.display = "none";
                     }
+
+                    function loadCommunityCalendar2() {
+                        var calendarEl = document.getElementById('calendar');
+
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                        eventClick: function(info) {
+                            var eventObj = info.event;
+                            $("#myModal").modal("toggle");
+                            
+                        },
+                        initialDate: '2023-11-15',
+                        events: [
+                            {
+                            title: 'simple event',
+                            start: '2023-11-02'
+                            },
+                            {
+                            title: 'event with URL',
+                            url: 'https://www.google.com/',
+                            start: '2023-11-03'
+                            }
+                        ]
+                        });
+                        var calendarTitle = document.getElementById('calendar-name');
+                        var communityName = 'Friends Events';
+                        calendarTitle.innerHTML = communityName;
+                        calendar.render();
+                    };
+
                 </script>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="display_friends()" checked>
-                    <label class="form-check-label" for="flexRadioDefault1">
-                      Friends
-                    </label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onclick="display_communities()">
-                    <label class="form-check-label" for="flexRadioDefault2">
-                      Communities
-                    </label>
-                  </div>
             </div>
             <div class="column" style="width: 50%;">
                 <div class="row">
@@ -113,32 +180,61 @@
                             <% if(user != "empty"){ %>
                                 <div class="card" style="width: 18rem;" id="adding_friend">
                                     <div class="card-body">
-                                        <% if(empty == true){ %>
+                                        <% if(user == "NOT_FOUND"){ %>
                                             <form action="remove_friend" method="POST">
                                                 <div class="form-group">
-                                                    <h5 class="card-title"><%= user.fullname %></h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
-                                                    <input type="hidden" id="userADD" name="userREMOVE" value="<%= user.userid %>">
-                                                    <button type="submit" class="btn btn-primary">Remove Friend</button> 
+                                                    <h5 class="card-title">Could not find user</h5>
                                                 </div> 
                                             </form>
                                         <% } else{ %>
-                                            <form  action="add_friend" method="POST">
-                                                <div class="form-group">
-                                                    <h5 class="card-title"><%= user.fullname %></h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
-                                                    <input type="hidden" id="userADD" name="userADD" value="<%= user.userid %>">
-                                                    <button type="submit" class="btn btn-primary">Add Friend</button>
-                                                </div>
-                                                
-                                            </form>
+                                            <% if(empty == "true"){ %>
+                                                <form action="remove_friend" method="POST">
+                                                    <div class="form-group">
+                                                        <h5 class="card-title"><%= user.fullname %></h5>
+                                                        <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                        <input type="hidden" id="userid" name="userid" value="<%= user.userid %>">
+                                                        <button type="submit" class="btn btn-primary">Remove Friend</button> 
+                                                    </div> 
+                                                </form>
+                                            <% } else if(empty == "pending"){ %>
+                                                <form  action="accept_friend" method="POST">
+                                                    <div class="form-group">
+                                                        <h5 class="card-title"><%= user.fullname %></h5>
+                                                        <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                        <input type="hidden" id="userid" name="userid" value="<%= user.userid %>">
+                                                        <button type="submit" name="accept" id="accept" class="btn btn-primary" style="width: 35%; display: inline-block;" >Accept</button>
+                                                        <button type="submit" formaction="remove_friend" name="decline" id="decline" class="btn btn-primary" style="width: 10%; display: inline-block; padding-left: 0%; padding-right: 0%;" >X</button>
+                                                    </div>
+                                                    
+                                                </form>
+                                            <% } else { %>
+                                                <form  action="add_friend" method="POST">
+                                                    <div class="form-group">
+                                                        <h5 class="card-title"><%= user.fullname %></h5>
+                                                        <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                        <input type="hidden" id="userADD" name="userADD" value="<%= user.userid %>">
+                                                        <button type="submit" class="btn btn-primary">Add Friend</button>
+                                                    </div>
+                                                    
+                                                </form>
+                                            <% } %>
                                         <% } %>
                                     </div>
                                 </div>
                             <% } %>
                         </div>
                         <div class="col">
-                            <p style="padding-top: 25%;">This is where the event calendar goes</p>
+                            <div style="width: auto; padding-right: 5%;" class="col-md-8 offset-md-0 mt-8">
+                                <div id="title" style="
+                                background: #78c2ad;
+                                border-radius: 6px;
+                                padding: 4px;
+                                padding-right: 5px;
+                                padding-left: 5px;">
+                                  <h3 id="calendar-name" style="text-align: center; color: #fff;"></h3>
+                                </div>
+                                <div id="calendar"></div>
+                              </div>
                         </div>
                     </div>
                 </div>
