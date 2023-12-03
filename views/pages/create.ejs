@@ -64,6 +64,31 @@
 
     <script>
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterCheckboxes = document.querySelectorAll('input[name="filters"]');
+        
+        filterCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const checkedCheckboxes = document.querySelectorAll('input[name="filters"]:checked');
+                
+                if (checkedCheckboxes.length >= 3) {
+                    filterCheckboxes.forEach(function(item) {
+                        if (!item.checked) {
+                            item.disabled = true;
+                        }
+                    });
+                } else {
+                    filterCheckboxes.forEach(function(item) {
+                        item.disabled = false;
+                    });
+                }
+            });
+        });
+    });
+
+    </script>
+
+    <script>
 
         function previewCommunity()
         {
