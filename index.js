@@ -266,32 +266,8 @@ app.post("/addUserToCommunity/:id", async (req, res) => {
 
     setTimeout(() => {
       res.redirect("/discover");
-    }, 4700); // 2000 milliseconds (2 seconds)
-    // res.render("pages/discover", { message: "User added to community" });
-    // res.status(200).send("User added to community");
-    // const allCommunitiesQuery = `SELECT * FROM communities`;
-    // const communityName = `SELECT name FROM communities WHERE communityID = ${communityId}`;
-    // const allEventsQuery = `SELECT * FROM events`;
-    /*
-    try {
-      // Fetch data from the database
-      const communities = await db.any(allCommunitiesQuery);
-      const events = await db.any(allEventsQuery);
-      // console.log(communities, events);
-
-      // Render the EJS template with the retrieved data
-
-      // res.render("pages/Discover", {
-      //   allCommunities: communities,
-      //   allEvents: events,
-      //   // message: "You joined " + communityName,
-      //   message: "You Joined Successfully!"
-      // });
-    } catch (error) {
-      console.error("Error in /discover route:", error);
-      res.status(500).send("Internal Server Error");
-    }
-    */
+    }, 2000);
+  
   } catch (error) {
     console.log("error:", error);
     console.error("Error in /addUserToCommunity route:", error);
@@ -315,7 +291,7 @@ app.post("/addUserToEvent/:id", async (req, res) => {
 
     setTimeout(() => {
       res.redirect("/discover");
-    }, 4700); // 2000 milliseconds (2 seconds)
+    }, 2000); // 2000 milliseconds (2 seconds)
     // res.redirect("/discover");
   } catch (error) {
     console.log("error:", error);
