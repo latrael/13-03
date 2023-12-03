@@ -29,7 +29,10 @@ include ('../partials/message') %>
                   <td><%= community.name %></td>
                   <td><%= community.description %></td>
                   <td>
-                    <button type="submit">Join</button>
+                    <div class="popup" onclick="myFunction('popup<%= community.name %>')">
+                      <button type="submit">Join</button>
+                      <span class="popuptext" id="popup<%= community.name %>">Community Joined!</span>
+                    </div>
                   </td>
                 </form>
               </tr>
@@ -67,9 +70,9 @@ include ('../partials/message') %>
                   <td><%= event.location %></td>
                   <!-- <td><%= event.communityid %></td> -->
                   <td>
-                    <div class="popup" onclick="myFunction()">
+                    <div class="popup" onclick="myFunction('popup<%= event.eventid %>')">
                       <button type="submit">Join</button>
-                      <span class="popuptext" id="myPopup">Event Joined!</span>
+                      <span class="popuptext" id="popup<%= event.eventid %>">Event Joined!</span>
                     </div>
                   </td>
                 </form>
@@ -80,22 +83,12 @@ include ('../partials/message') %>
       </div>
     </div>
     <script>
-      function myFunction() {
-        // const form = element.closest('.event-form');
-        // const popup2 = form.querySelector('.popup');
-        var popup = document.getElementById("myPopup");
-        
-        // popup2.classList.toggle('active');
-        // // Optionally, you can hide the popup after a delay
-        // setTimeout(() => {
-        //   popup2.classList.remove('active');
-        // }, 2000); // 2000 milliseconds (2 seconds)
+      function myFunction(popupId) {
+        var popup = document.getElementById(popupId);
         popup.classList.toggle("show");
         setTimeout(() => {
-            popup.classList.add("hide");
-        }, 600);
-        // popup.classList.toggle("show");
-        // popup.classList.add("hide");
+          popup.classList.add("hide");
+        }, 1100);
       }
     </script>
   </main>
