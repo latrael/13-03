@@ -19,7 +19,9 @@ CREATE TABLE communities (
     communityID SERIAL PRIMARY KEY,
     name VARCHAR(40),
     description VARCHAR(5000),
-    filters VARCHAR(250)
+    filters VARCHAR(250),
+    adminUserID INTEGER,
+    FOREIGN KEY (adminUserID) REFERENCES users(userID)
 );
 
 CREATE TABLE users_to_communities (
