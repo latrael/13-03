@@ -1,0 +1,26 @@
+<%- include ('../partials/header') %> 
+<%- include ('../partials/menu') %>
+
+<div class="container">
+  <div class="community-details">
+    <h1><%= communityDetails.name %></h1>
+  </div>
+
+  <p><%= communityDetails.description %></p>
+
+  <div class="row">
+    <div class="col-md-4 offset-md-0 mt-4">
+      <div class="list-group">
+        <h5 class="list-group-item list-group-item-action active" aria-current="true">Community Members</h5>
+        <% communityMembers.forEach(member => { %>
+          <a class="list-group-item list-group-item-action" href="/userProfile/<%= member.userID %>">
+            <%= member.fullName %> (Username: <%= member.username %>)
+          </a>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%- include ('../partials/footer') %>
