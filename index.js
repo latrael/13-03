@@ -111,8 +111,7 @@ app.get("/", async (req, res) => {
     FROM users_to_communities 
     JOIN communities ON users_to_communities.communityID = communities.communityID 
     WHERE users_to_communities.userID = $1`;
-    
-
+  
     try {
       // Fetch user's communities from the database
       const userCommunities = await db.any(userCommunitiesQuery, [req.session.user.userid]);
@@ -129,39 +128,7 @@ app.get("/", async (req, res) => {
   }
 }); 
 
-// //Add this route at the end of your file
-// app.get("/community/:communityID", async (req, res) => {
-//   const communityID = req.params.communityID;
 
-//   try {
-//     // Modify the query to fetch details for the specified communityID
-//     const communityDetailsQuery = `
-//       SELECT communities.name, communities.description, communities.filters, communities.communityID
-//       FROM communities
-//       WHERE communities.communityID = $1`;
-
-//       const userCommunitiesQuery = 
-//       `SELECT communities.name, communities.communityID
-//         FROM users_to_communities 
-//         JOIN communities 
-//         ON users_to_communities.communityID = communities.communityID 
-//         WHERE users_to_communities.userID = $1`;
-
-//     const communityDetails = await db.oneOrNone(communityDetailsQuery, [communityID]);
-//     console.log('Comm ID:', communityID);
-
-//     if (communityDetails) {
-//       res.render("pages/viewCommunity", { communityDetails });
-//     } else {
-//       // Handle case where the community is not found
-//       res.status(404).send('Community not found');
-//     }
-//   } catch (error) {
-//     console.error('Error in /community/:communityID route:', error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-// Add this route to your file
 app.get("/community/:communityID", async (req, res) => {
   const communityID = req.params.communityID;
 
@@ -196,8 +163,6 @@ app.get("/community/:communityID", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 
 
