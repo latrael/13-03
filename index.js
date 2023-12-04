@@ -128,7 +128,6 @@ app.get("/", async (req, res) => {
   }
 }); 
 
-
 app.get("/community/:communityID", async (req, res) => {
   const communityID = req.params.communityID;
 
@@ -163,9 +162,6 @@ app.get("/community/:communityID", async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
-
 
 app.get("/welcome", (req, res) => {
   res.json({ status: "success", message: "Welcome!" });
