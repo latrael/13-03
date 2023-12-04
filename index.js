@@ -447,6 +447,8 @@ app.get("/friendProfile/:friendID", async (req, res) => {
 
 app.get("/discover", async (req, res) => {
   // res.render("pages/Discover");
+  
+
   const allCommunitiesQuery = `SELECT * FROM communities`;
   const allEventsQuery = `SELECT * FROM events`;
   try {
@@ -542,7 +544,12 @@ app.post("/addUserToEvent/:id", async (req, res) => {
 
 
 app.get("/create", (req, res) => {
+  if(req.session.user == undefined){
+    res.render("pages/login", { message: "Please Login to Create a Community", error: "danger"});  
+  }
+    else {
   res.render("pages/create");
+    }
 });
 
 
@@ -557,12 +564,24 @@ app.get('/preview-community', (req, res) => {
 app.post ('/create-community', async (req, res) => {
   try {
     const { name, description, filters } = req.body;
+    const userID = req.session.user.userid;
+
+    //check for existing communities
+    const existingCommunity = await db.query(
+      "SELECT * FROM communities WHERE name = $1",
+      [name]
+    );
+
+   if (existingCommunity > 0) {
+      return res.render('pages/create', { message: 'Community already exists!', error: 'danger' });
+    }
+
 
     const filtersString = Array.isArray(filters) ? filters.join(',') : '';
 
     const newCommunity = await db.query(
-      "INSERT INTO communities (name, description, filters) VALUES($1, $2, $3) RETURNING *",
-      [name, description, filtersString]
+      "INSERT INTO communities (name, description, filters, adminUserID) VALUES($1, $2, $3, $4) RETURNING *",
+      [name, description, filtersString, userID]
     );
     res.render('pages/create', { message: 'Community created successfully!' });
 
