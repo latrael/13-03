@@ -29,3 +29,13 @@ INSERT INTO users_to_communities(userID, communityID) VALUES
 INSERT INTO users_to_events(userID, eventID) VALUES
 (91, 1),
 (91, 2);
+
+CREATE TABLE community_chat (
+    messageID SERIAL PRIMARY KEY,
+    communityID INTEGER,
+    userID INTEGER,
+    message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (communityID) REFERENCES communities(communityID),
+    FOREIGN KEY (userID) REFERENCES users(userID)
+);

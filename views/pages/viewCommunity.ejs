@@ -2,25 +2,28 @@
 <%- include ('../partials/menu') %>
 
 <div class="container">
-  <div class="community-details">
-    <h1><%= communityDetails.name %></h1>
-  </div>
-
-  <p><%= communityDetails.description %></p>
-
   <div class="row">
-    <div class="col-md-4 offset-md-0 mt-4">
+    <!-- Left Section for Community Name and Description -->
+    <div class="col-md-8 mt-4">
+      <div class="community-details">
+        <h1><%= communityDetails.name %></h1>
+        <p><%= communityDetails.description %></p>
+      </div>
+    </div>
+
+    <!-- Right Section for Community Members -->
+    <div class="col-md-4 mt-4">
       <div class="list-group">
         <h5 class="list-group-item list-group-item-action active" aria-current="true">Community Members</h5>
         <% communityMembers.forEach(member => { %>
-          <a class="list-group-item list-group-item-action" href="/userProfile/<%= member.userID %>">
-            <%= member.fullName %> (Username: <%= member.username %>)
+          <a class="list-group-item list-group-item-action">
+            <%= member.fullName %> Username: <%= member.username %>
           </a>
         <% }); %>
       </div>
     </div>
   </div>
-
 </div>
 
 <%- include ('../partials/footer') %>
+  
