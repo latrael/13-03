@@ -341,6 +341,9 @@ app.get("/friendProfile/:friendID", async (req, res) => {
     }
     else{
       try{
+        const myEvents = await db.any("SELECT * FROM users_to_events WHERE userID = $1", [
+          req.session.user.userid,
+         ]);
         const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
          req.session.user.userid, 
         ]);
@@ -350,6 +353,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
             friend: "no friends",
             community: "empty",
             empty: " ",
+            events: "no events",
           });
         }
         const community = {
@@ -357,11 +361,15 @@ app.get("/friendProfile/:friendID", async (req, res) => {
           desciption: undefined,
           communityid: undefined,
         };
+        var status = 'friends';
+        const friends_check = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1 AND friends.status = $2", [
+          req.session.user.userid, status,
+         ]);
         const find_communities = [];
         var index = 0;
         const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
-        for(i = 0; i < friends.length; i++){
-          const friend_community = await db.query(result, [friends[i].useridb,]);
+        for(i = 0; i < friends_check.length; i++){
+          const friend_community = await db.query(result, [friends_check[i].useridb,]);
           for(j=0; j < friend_community.length; j++){
             const community = {
               name: friend_community[j].name,
@@ -372,11 +380,39 @@ app.get("/friendProfile/:friendID", async (req, res) => {
             index = index + 1;
           }
         }
+        const find_events = [];
+        var index1 = 0;
+        const result2 = 'SELECT * FROM users_to_events JOIN events ON users_to_events.eventID = events.id WHERE users_to_events.userID = $1';
+        for(i = 0; i < friends_check.length; i++){
+          const friend_event = await db.query(result2, [friends_check[i].useridb,]);
+          for(j=0; j < friend_event.length; j++){
+            var status = "false"
+            for(n=0; n < myEvents.length; n++){
+              if(myEvents[n].eventid == friend_event[j].eventid){
+                status = "true";
+              }
+            }
+            const events = {
+              title: friend_event[j].title,
+              start: friend_event[j].start,
+              end: friend_event[j].end,
+              extendedProps: {
+                //location: friend_event[j].location,
+                eventID: friend_event[j].id,
+                status: status,
+              },
+            };
+            find_events[index1] = events;
+            index1 = index1 + 1;
+          }
+        }
+        console.log(find_events);
           res.render("pages/friends", {
             user: "empty",
             friend: friends,
             community: find_communities,
             empty: " ",
+            events: find_events,
           });
       }
       catch (error) {
@@ -387,6 +423,9 @@ app.get("/friendProfile/:friendID", async (req, res) => {
   
   app.post("/user_search", async (req, res) =>{
     try{
+        const myEvents = await db.any("SELECT * FROM users_to_events WHERE userID = $1", [
+          req.session.user.userid,
+        ]);
         const friends = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1", [
          req.session.user.userid, 
         ]);
@@ -395,11 +434,15 @@ app.get("/friendProfile/:friendID", async (req, res) => {
           desciption: undefined,
           communityid: undefined,
         };
+        var status = 'friends';
+        const friends_check = await db.any("SELECT * FROM friends JOIN users ON friends.userIDB = users.userID WHERE friends.userIDA = $1 AND friends.status = $2", [
+          req.session.user.userid, status,
+         ]);
         const find_communities = [];
         var index = 0;
         const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
-        for(i = 0; i < friends.length; i++){
-          const friend_community = await db.query(result, [friends[i].useridb,]);
+        for(i = 0; i < friends_check.length; i++){
+          const friend_community = await db.query(result, [friends_check[i].useridb,]);
           for(j=0; j < friend_community.length; j++){
             const community = {
               name: friend_community[j].name,
@@ -410,6 +453,49 @@ app.get("/friendProfile/:friendID", async (req, res) => {
             index = index + 1;
           }
         }
+
+        const find_events = [];
+        var index1 = 0;
+        const result2 = 'SELECT * FROM users_to_events JOIN events ON users_to_events.eventID = events.id WHERE users_to_events.userID = $1';
+        for(i = 0; i < friends_check.length; i++){
+          const friend_event = await db.query(result2, [friends_check[i].useridb,]);
+          for(j=0; j < friend_event.length; j++){
+            var status = "false"
+            for(n=0; n < myEvents.length; n++){
+              if(myEvents[n].eventid == friend_event[j].eventid){
+                status = "true";
+              }
+            }
+            const events = {
+              title: friend_event[j].title,
+              start: friend_event[j].start,
+              end: friend_event[j].end,
+              extendedProps: {
+                //location: friend_event[j].location,
+                eventID: friend_event[j].id,
+                status: status,
+              },
+            };
+            find_events[index1] = events;
+            index1 = index1 + 1;
+          }
+        }
+
+        // const find_communities = [];
+        // var index = 0;
+        // const result = 'SELECT * FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1';
+        // for(i = 0; i < friends.length; i++){
+        //   const friend_community = await db.query(result, [friends[i].useridb,]);
+        //   for(j=0; j < friend_community.length; j++){
+        //     const community = {
+        //       name: friend_community[j].name,
+        //       desciption: friend_community[j].description,
+        //       communityid: friend_community[j].communityid,
+        //     };
+        //     find_communities[index] = community;
+        //     index = index + 1;
+        //   }
+        // }
       const users = await db.oneOrNone("SELECT * FROM users WHERE username = $1", [
         req.body.user,
       ]);
@@ -419,6 +505,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
           friend: friends,
           community: find_communities,
           empty: " ",
+          events: find_events,
         });
       }
       else{
@@ -429,8 +516,11 @@ app.get("/friendProfile/:friendID", async (req, res) => {
               if(friends[i].status == "friends"){
                 friend = "true";
               }
-              else{
+              else if(friends[i].status == "pending"){
                 friend = "pending";
+              }
+              else{
+                friend = "sent";
               }
             }
           }
@@ -439,6 +529,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
             friend: friends,
             community: find_communities,
             empty: friend,
+            events: find_events,
           });
         }
         else{
@@ -447,6 +538,7 @@ app.get("/friendProfile/:friendID", async (req, res) => {
             friend: friends,
             community: find_communities,
             empty: " ",
+            events: find_events,
           });
         }
       }
@@ -470,6 +562,30 @@ app.get("/friendProfile/:friendID", async (req, res) => {
     }
   });
   
+  app.post("/add_user_to_events",async (req, res) =>{
+    const user1 = req.session.user.userid;
+    try{
+      const query = "INSERT INTO users_to_events (userID, eventID) VALUES ($1, $2) returning *";
+      await db.one(query, [user1, req.body.eventid]);
+      res.redirect("/friends")
+    }
+    catch (error) {
+      console.error("Error: " + error);
+    }
+  });
+
+  app.post("/remove_user_event",async (req, res) =>{
+    const user1 = req.session.user.userid;
+    try{
+      const query = "DELETE FROM users_to_events WHERE userID = $1 AND eventID =$2 returning *";
+      await db.one(query, [user1,req.body.eventid]);
+      res.redirect("/friends")
+    }
+    catch (error) {
+      console.error("Error: " + error);
+    }
+  });
+
   app.post("/accept_friend",async (req, res) =>{
     const user1 = req.session.user.userid;
     try{

@@ -14,27 +14,30 @@
       </style>
 </head>
 
-<body onload="loadCommunityCalendar2()">
+<body onload="loadCommunityCalendar2('<%= JSON.stringify(events) %>')">
     <main>
-        <!-- Modal -->
+        <!-- Modal  -->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                </div>
-                <div class="modal-body">
-                ...
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+
+                <form id="events" action="add_user_to_events" method="POST" style="padding: 3%;">
+                    <div class="form-group">
+                        <h5 id="modalTitle"></h5>
+                        <p id="description"></p>
+                        <p id="date"></p>
+                        <p id="location"></p>
+                        <input type="hidden" id="eventid" name="eventid" value="">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit"  id="join" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Join event</button>
+                    <button type="submit" formaction="remove_user_event" id="leave" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Leave event</button>
+                </form>
             </div>
             </div>
         </div>
         <div class="row">
-            <div class="column" style="width: 50%;">
+            <div class="column" style="width: 49%;">
                 <div class="list-group" style="width: 75%; padding: 5%; display: none;" id="communities_d">
                     <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends Communities</h5>
                     <div class="scroll">
@@ -51,8 +54,8 @@
                                 <form action="accept_friend" method="POST">
                                     <div class="form-group">
                                         <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                        <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %></button>
-                                        <button type="submit" name="accept" id="accept" class="btn btn-primary" style="width: 19%; display: inline-block;" >Accept</button>
+                                        <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %></button>
+                                        <button type="submit" name="accept" id="accept" class="btn btn-primary" style="width: 18%; display: inline-block;" >Accept</button>
                                         <button type="submit" formaction="remove_friend" name="decline" id="decline" class="btn btn-primary" style="width: 5%; display: inline-block; padding-left: 0%; padding-right: 0%;" >X</button>
                                     </div> 
                                 </form>
@@ -63,7 +66,7 @@
                                     <form action="remove_friend" method="POST">
                                         <div class="form-group">
                                             <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %></button>
+                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %></button>
                                             <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Remove</button>
                                         </div> 
                                     </form>
@@ -74,7 +77,7 @@
                                     <form action="remove_friend" method="POST">
                                         <div class="form-group">
                                             <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 74%; text-align: left;"><%= friend[i].fullname %> (Pending)</button>
+                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %> (Pending)</button>
                                             <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >X</button>
                                         </div> 
                                     </form>
@@ -117,7 +120,7 @@
                             x.style.display = "block";
                         }
                         else{
-                            x.style.display = "block"
+                            x.style.display = "block";
                             y.style.display = "none";
                         }
                     }
@@ -133,31 +136,35 @@
                         x.style.display = "none";
                     }
 
-                    function loadCommunityCalendar2() {
+                    function loadCommunityCalendar2(friends_events) {
                         var calendarEl = document.getElementById('calendar');
-
+                        friends_events = JSON.parse(friends_events);
+                        console.log(friends_events);
                         var calendar = new FullCalendar.Calendar(calendarEl, {
                         eventClick: function(info) {
                             var eventObj = info.event;
+                            console.log(info.event);
+                            document.getElementById('modalTitle').innerHTML = info.event.title;
+                            document.getElementById('location').innerHTML = info.event.extendedProps.location;
+                            document.getElementById('eventid').value = info.event.extendedProps.eventID;
+                            document.getElementById('date').innerHTML = info.event.start;
+                            if(info.event.extendedProps.status == 'false'){
+                                document.getElementById('join').style.display = "inline-block";
+                                document.getElementById('leave').style.display = "none";
+                            }
+                            else{
+                                document.getElementById('leave').style.display = "inline-block";
+                                document.getElementById('join').style.display = "none";
+                            }
+                            //document.getElementById('description').innerHTML = info.event.extendedProps.location; 
                             $("#myModal").modal("toggle");
                             
                         },
-                        initialDate: '2023-11-15',
-                        events: [
-                            {
-                            title: 'simple event',
-                            start: '2023-11-02'
-                            },
-                            {
-                            title: 'event with URL',
-                            url: 'https://www.google.com/',
-                            start: '2023-11-03'
-                            }
-                        ]
+                        events: friends_events
                         });
                         var calendarTitle = document.getElementById('calendar-name');
                         var communityName = 'Friends Events';
-                        calendarTitle.innerHTML = communityName;
+                        calendarTitle.innerHTML =communityName;
                         calendar.render();
                     };
 
@@ -207,6 +214,16 @@
                                                     </div>
                                                     
                                                 </form>
+                                                <% } else if(empty == "sent"){ %>
+                                                    <form  action="remove_friend" method="POST">
+                                                        <div class="form-group">
+                                                            <h5 class="card-title"><%= user.fullname %></h5>
+                                                            <h6 class="card-subtitle mb-2 text-muted"><%= user.username %></h6>
+                                                            <input type="hidden" id="userid" name="userid" value="<%= user.userid %>">
+                                                            <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >X</button>
+                                                        </div>
+                                                        
+                                                    </form>
                                             <% } else { %>
                                                 <form  action="add_friend" method="POST">
                                                     <div class="form-group">
