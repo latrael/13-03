@@ -107,17 +107,17 @@ app.get("/", async (req, res) => {
     });
   } else {
     const userCommunitiesQuery = 
-    `SELECT communities.name 
-      FROM users_to_communities 
-      JOIN communities 
-      ON users_to_communities.communityID = communities.communityID 
-      WHERE users_to_communities.userID = $1`;
-
+   ` SELECT communities.name, communities.communityID
+    FROM users_to_communities 
+    JOIN communities ON users_to_communities.communityID = communities.communityID 
+    WHERE users_to_communities.userID = $1`;
+  
     try {
       // Fetch user's communities from the database
       const userCommunities = await db.any(userCommunitiesQuery, [req.session.user.userid]);
 
       console.log('User communities:', userCommunities);
+      const communityID = req.params.communityID;
 
       // Render the EJS template with the retrieved user communities
       res.render("pages/home", { userCommunities });
@@ -127,6 +127,41 @@ app.get("/", async (req, res) => {
     }
   }
 }); 
+
+app.get("/community/:communityID", async (req, res) => {
+  const communityID = req.params.communityID;
+
+  try {
+    // Fetch community details
+    const communityDetailsQuery = `
+      SELECT communities.name, communities.description, communities.filters, communities.communityID
+      FROM communities
+      WHERE communities.communityID = $1`;
+
+    // Fetch members of the community
+    const communityMembersQuery = `
+      SELECT users.fullName, users.username
+      FROM users
+      JOIN users_to_communities ON users.userID = users_to_communities.userID
+      WHERE users_to_communities.communityID = $1`;
+
+    const [communityDetails, communityMembers] = await Promise.all([
+      db.oneOrNone(communityDetailsQuery, [communityID]),
+      db.manyOrNone(communityMembersQuery, [communityID]),
+    ]);
+
+    if (communityDetails) {
+      console.log('Community Members:', communityMembers);
+      res.render("pages/viewCommunity", { communityMembers,communityDetails} );
+          } else {
+      // Handle case where the community is not found
+      res.status(404).send('Community not found');
+    }
+  } catch (error) {
+    console.error('Error in /community/:communityID route:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 app.get("/welcome", (req, res) => {
   res.json({ status: "success", message: "Welcome!" });
