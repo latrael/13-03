@@ -100,7 +100,7 @@ include ('../partials/message') %>
             <tbody>
               <% allEvents.forEach(event => { %>
               <tr>
-                <form method="POST" action="<%- "/addUserToEvent/" + event.eventid %>">
+                <form method="POST" action="<%- "/addUserToEvent/" + event.id %>">
                   <!-- <td><%= event.eventid %></td> -->
                   <td><%= event.name %></td>
                   <td><%= event.description %></td>
