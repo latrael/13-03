@@ -5,63 +5,55 @@
 
   <main>
 
-    <div class="container">
-      <div class="row">
+        <!-- Alen Ramic - This is the column where the website users communites pop up for now just has static varibles -->
+        <div class="container">
 
-        <!-- User Communities Section -->
-        <div class="col-md-4 mt-4">
-          <div class="list-group">
-            <h5 class="list-group-item list-group-item-action active" aria-current="true">Your Communities</h5>
-            <% if (userCommunities.length > 0) { %>
-              <% userCommunities.forEach(community => { %>
-                <button class="list-group-item list-group-item-action"
-                        onclick="loadCommunityCalendar('<%= community.name %>')"><%= community.name %>
-                </button>
-              <% }); %>
-            <% } else { %>
-              <p>You are not part of any communities yet. 
-                <a href="/discover">Join</a> or 
-                <a href="/create">create</a> communities to get started!
-              </p>
-            <% } %>
-          </div>
+          <div class="row">
+            <!-- User Communities Section -->
+            <div class="col-md-4 offset-md-0 mt-4">
+                <div class="list-group">
+                    <h5 class="list-group-item list-group-item-action active" aria-current="true">Your Communities</h5>
+                    <% if (userCommunities.length > 0) { %>
+                        <% userCommunities.forEach(community => { %>
+                          <% if(communityEvents.length > 0) { %>
+                            <script>
+                              var communityEventsData = <%- JSON.stringify(communityEvents) %>;
+                            </script>
+                              <button class="list-group-item list-group-item-action"
+                              onclick="loadCommunityCalendar('<%= community.name %>', communityEventsData)" method="post"><%= community.name %>
+                              </button>
+                              
+                              <% } %>
+                            <% }); %>
+                         
+                    
+                    <% } else { %>
+                        <p>You are not part of any communities yet. 
+                            <a href="/discover">Join</a> or 
+                            <a href="/create">create</a> communities to get started!
+                        </p>
+                    <% } %>
+                </div>
+            </div>
+            <br>
+                            <!-- NABIL DJABER CALENDER ELEMENTS-->
+                            <div>
+                              <div id="title" style="
+                              background: #78c2ad;
+                              border-radius: 6px;
+                              padding: 4px;
+                              padding-right: 5px;
+                              padding-left: 5px;">
+                                <h3 id="calendar-name" style="text-align: center; color: #fff;"></h3>
+                              </div>
+                              <div id="calendar"></div>
+                            </div>
+                            
+                
+            </div>
         </div>
 
-        <div class="col-md-4 mt-4">
-          <div class="list-group">
-            <h5 class="list-group-item list-group-item-action active" aria-current="true">Links to Communities</h5>
-            <% if (userCommunities.length > 0) { %>
-              <% userCommunities.forEach(community => { %>
-                <a href="/community/<%= community.communityid %>" class="list-group-item list-group-item-action">
-                  <%= community.name %>
-                </a>
-              <% }); %>
-            <% } else { %>
-              <p>You are not part of any communities yet. 
-                <a href="/discover">Join</a> or 
-                <a href="/create">create</a> communities to get started!
-              </p>
-            <% } %>
-          </div>
-        </div>
 
-          <!-- Calendar Section -->
-        <div class="col-md-8 mt-4">
-        <div id="title" style="
-          background: #78c2ad;
-          border-radius: 6px;
-          padding: 4px;
-          padding-right: 5px;
-          padding-left: 5px;">
-          <h3 id="calendar-name" style="text-align: center; color: #fff;"></h3>
-        </div>
-        <div id="calendar"></div>
-        
-        </div>
-   
-      </div>
-
-    </div>
 
   </main>
 
