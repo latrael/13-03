@@ -107,20 +107,44 @@ app.get("/", async (req, res) => {
     });
   } else {
     const userCommunitiesQuery = 
-   ` SELECT communities.name, communities.communityID
-    FROM users_to_communities 
-    JOIN communities ON users_to_communities.communityID = communities.communityID 
-    WHERE users_to_communities.userID = $1`;
-  
+    `SELECT 
+    communities.name, communities_to_events.eventID 
+    FROM 
+    users_to_communities 
+    JOIN 
+    communities ON users_to_communities.communityID = communities.communityID 
+    JOIN 
+    communities_to_events ON communities.communityID = communities_to_events.communityID 
+    WHERE 
+    users_to_communities.userID = $1;`;
+
+    const eventsQuery = `
+    SELECT 
+    events.* 
+    FROM 
+    users_to_communities 
+    JOIN 
+    communities ON users_to_communities.communityID = communities.communityID 
+    JOIN 
+    communities_to_events ON communities.communityID = communities_to_events.communityID 
+    JOIN 
+    events ON communities_to_events.eventID = events.id
+    WHERE 
+    users_to_communities.userID = $1;`;
+
+      //const userEventsQuery = `SELECT communities.name FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1`;
+
     try {
       // Fetch user's communities from the database
       const userCommunities = await db.any(userCommunitiesQuery, [req.session.user.userid]);
 
       console.log('User communities:', userCommunities);
-      const communityID = req.params.communityID;
+
+      const communityEvents = await db.any(eventsQuery, [req.session.user.userid]);
+      console.log('Community events:', JSON.stringify(communityEvents, null, 2));
 
       // Render the EJS template with the retrieved user communities
-      res.render("pages/home", { userCommunities });
+      res.render("pages/home", { userCommunities , communityEvents });
     } catch (error) {
       console.error('Error fetching user communities:', error);
       res.status(500).send('Internal Server Error');
