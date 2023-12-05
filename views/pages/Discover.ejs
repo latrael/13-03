@@ -100,18 +100,18 @@ include ('../partials/message') %>
             <tbody>
               <% allEvents.forEach(event => { %>
               <tr>
-                <form method="POST" action="<%- "/addUserToEvent/" + event.eventid %>">
+                <form method="POST" action="<%- "/addUserToEvent/" + event.id %>">
                   <!-- <td><%= event.eventid %></td> -->
                   <td><%= event.name %></td>
                   <td><%= event.description %></td>
-                  <td><%= event.date %></td>
+                  <td><%= event.start %></td>
                   <!-- <td><%= event.time %></td> -->
                   <td><%= event.location %></td>
                   <!-- <td><%= event.communityid %></td> -->
                   <td>
-                    <div class="popup" onclick="myFunction('popup<%= event.eventid %>')">
-                      <button type="submit" id="joinbtn">Join</button>
-                      <span class="popuptext" id="popup<%= event.eventid %>">Event Joined!</span>
+                    <div class="popup" onclick="myFunction('popup<%= event.id %>')">
+                      <button type="submit">Join</button>
+                      <span class="popuptext" id="popup<%= event.id %>">Event Joined!</span>
                     </div>
                   </td>
                 </form>
