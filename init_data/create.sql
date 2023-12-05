@@ -36,7 +36,11 @@ CREATE TABLE events (
     title VARCHAR(100),
     description TEXT,
     start VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
-    "end" VARCHAR(100)
+    "end" VARCHAR(100),
+
+    -- name VARCHAR(100),
+    -- date VARCHAR(100),
+    -- location TEXT
 
 );
 
