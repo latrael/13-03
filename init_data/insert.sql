@@ -4,7 +4,7 @@ INSERT INTO users (userID, fullName, username, password, email) VALUES
   (93, 'Jane Doe', 'jane_doe', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','jane@example.com'),
   (94, 'Bob Smith', 'bob_smith', '$2a$10$kZW6xd2Vxc2ueuChmT4BLetTs1u99DiAWldsKS/DPxexHgzDRP76S','bob@example.com'),
   (95, 'Test', 'testing', '$2b$10$/dt5ujF.HnwpJ7Cob4rUo.BnzLomXUsb7i8VmG8jA1rmeMrvsZqfm','testing@colorado.edu'),
-  (96, 'Jacob Stiegler', 'jacob', '$2b$10$/dt5ujF.HnwpJ7Cob4rUo.BnzLomXUsb7i8VmG8jA1rmeMrvsZqfm','jast5595@colorado.edu');
+  (96, 'Jacob Stiegler', 'jacob406', '$2b$10$/dt5ujF.HnwpJ7Cob4rUo.BnzLomXUsb7i8VmG8jA1rmeMrvsZqfm','jast5595@colorado.edu');
 
 INSERT into communities (name, description) VALUES 
 ('Adobe Creative Club', 'This is a place for design and learning the art of Adobe softwares. Sharing knowledge and experience around campus about Adobe software and connecting with students to better skills.'),
@@ -37,11 +37,17 @@ INSERT INTO users_to_communities(userID, communityID) VALUES
 (91,1),
 (91,2),
 (91,3),
-(91,4);
+(91,4),
+(93,3),
+(95,4);
 
 INSERT INTO users_to_events(userID, eventID) VALUES
 (91, 1),
-(91, 2);
+(91, 2),
+(93, 1),
+(93, 2),
+(93, 3),
+(93, 4);
 
 INSERT INTO communities_to_events(communityToEventID, communityID, eventID) VALUES
 (1, 1, 1),
