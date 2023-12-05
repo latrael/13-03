@@ -737,7 +737,59 @@ app.get("/create", (req, res) => {
   }
 });
 
-app.get("/preview-community", (req, res) => {
+
+app.get("/createEvent/:communityID", (req, res) => {
+  const communityID = req.params.communityID;
+  if(req.session.user == undefined){
+    res.render("pages/login", { message: "Please Login to Create an Event", error: "danger"});  
+  }
+    else {
+  res.render("pages/createEvent", {communityID});
+    }
+})
+
+app.post("/createEvent/:communityID", async (req, res) => {
+  const communityID = req.params.communityID;
+
+  if (req.session.user == undefined) {
+    res.render("pages/login", {
+      message: "Please Login to Create an Event",
+      error: "danger",
+    });
+  } else {
+    // TODO: Check if current user is admin for community id, otherwise deny request
+    
+    let {title, description, start, end } = req.body;
+
+    // For some reason it is not auto-incrementing the eventid, so let us fetch the last eventid and increment it by 1
+    const lastEventQuery = `SELECT id FROM events ORDER BY id DESC LIMIT 1`;
+    const lastEvent = await db.one(lastEventQuery);
+    const eventid = lastEvent.id + 1;
+
+    query = `INSERT INTO events (title, description, start, "end", id) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+    console.log(eventid, "b")
+
+    try {
+      const newEvent = await db.one(query, [title, description, start, end, eventid]);
+      const eventID = newEvent.eventid;
+      const communitytoeventquery = `select communitytoeventid FROM communities_to_events ORDER BY communitytoeventid DESC LIMIT 1`;
+      const lastCommunityToEvent = await db.one(communitytoeventquery);
+      const communitytoeventid = lastCommunityToEvent.communitytoeventid + 1;
+      const query2 = `INSERT INTO communities_to_events (communityID, eventID, communitytoeventid) VALUES ($1, $2, $3) RETURNING *`;
+      await db.one(query2, [communityID, eventID, communitytoeventid]);
+      // insert event id into users_to_events
+      const query3 = `INSERT INTO users_to_events (userID, eventID) VALUES ($1, $2) RETURNING *`;
+      await db.one(query3, [req.session.user.userid, eventID]);
+      res.redirect("/discover");
+    } catch (error) {
+      console.error("Error: " + error);
+    }
+  }
+})
+
+
+app.get('/preview-community', (req, res) => {
+
   const { name, description, filters } = req.query;
   // Split the filters string into an array if it's not empty
   const filtersArray = filters ? filters.split(",") : [];
