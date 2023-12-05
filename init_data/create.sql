@@ -32,19 +32,18 @@ CREATE TABLE users_to_communities (
 );
 
 CREATE TABLE events (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(100),
+    eventID SERIAL PRIMARY KEY,
+    name VARCHAR(100),
     description TEXT,
-    start VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
-    "end" VARCHAR(100)
-
+    date VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
+    location TEXT
 );
 
 CREATE TABLE users_to_events (
     userID INTEGER,
     eventID INTEGER,
     FOREIGN KEY (userID) REFERENCES users(userID),
-    FOREIGN KEY (eventID) REFERENCES events(id)
+    FOREIGN KEY (eventID) REFERENCES events(eventID)
 );
 
 CREATE TABLE communities_to_events (
@@ -52,5 +51,5 @@ CREATE TABLE communities_to_events (
     communityID INTEGER,
     eventID INTEGER,
     FOREIGN KEY (communityID) REFERENCES communities(communityID),
-    FOREIGN KEY (eventID) REFERENCES events(id)
+    FOREIGN KEY (eventID) REFERENCES events(eventID)
 ); 
