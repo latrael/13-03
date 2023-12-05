@@ -78,7 +78,7 @@ async function loadProfile(arg) {
   ON users_to_communities.communityID = communities.communityID
   WHERE users_to_communities.userID = $1`;
   const equery = `
-  SELECT *
+  SELECT DISTINCT *
   FROM users_to_events
   RIGHT JOIN events
   ON users_to_events.eventID = events.id
@@ -619,9 +619,8 @@ app.get("/friendProfile/:friendID", async (req, res) => {
 
 app.get("/discover", async (req, res) => {
     try {
-      console.log("testing");
       const allCommunitiesQuery = `SELECT * FROM communities`;
-      const allEventsQuery = `SELECT * FROM events`;
+      const allEventsQuery = `SELECT e.id, e.title, e.description,  e.start,  e.end, c.name AS community_name FROM events e JOIN  communities_to_events cte ON e.id = cte.eventID JOIN  communities c ON cte.communityID = c.communityID;`;
       // Fetch data from the database
       const communities = await db.any(allCommunitiesQuery);
       const events = await db.any(allEventsQuery);
@@ -746,14 +745,16 @@ app.post("/createEvent/:communityID", async (req, res) => {
     // For some reason it is not auto-incrementing the eventid, so let us fetch the last eventid and increment it by 1
     const lastEventQuery = `SELECT id FROM events ORDER BY id DESC LIMIT 1`;
     const lastEvent = await db.one(lastEventQuery);
-    const eventid = lastEvent.id + 1;
+    let eventid = lastEvent.id + 1;
 
     query = `INSERT INTO events (title, description, start, "end", id) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
     console.log(eventid, "b")
 
     try {
+      let originalEventID = eventid;
       const newEvent = await db.one(query, [title, description, start, end, eventid]);
-      const eventID = newEvent.eventid;
+      //const eventID = newEvent.eventid;
+      let eventID = originalEventID;
       const communitytoeventquery = `select communitytoeventid FROM communities_to_events ORDER BY communitytoeventid DESC LIMIT 1`;
       const lastCommunityToEvent = await db.one(communitytoeventquery);
       const communitytoeventid = lastCommunityToEvent.communitytoeventid + 1;
@@ -762,6 +763,7 @@ app.post("/createEvent/:communityID", async (req, res) => {
       // insert event id into users_to_events
       const query3 = `INSERT INTO users_to_events (userID, eventID) VALUES ($1, $2) RETURNING *`;
       await db.one(query3, [req.session.user.userid, eventID]);
+      console.log("Created event successfully")
       res.redirect("/discover");
     } catch (error) {
       console.error("Error: " + error);
@@ -796,11 +798,14 @@ app.post ('/create-community', async (req, res) => {
 
     const filtersString = Array.isArray(filters) ? filters.join(',') : '';
 
+    let communitiesIDQuery = 'Select * from communities order by communityid desc limit 1';
+    const communitiesID = await db.query(communitiesIDQuery);
+
 
     
     const newCommunity = await db.query(
-      "INSERT INTO communities (name, description, filters, adminUserID) VALUES($1, $2, $3, $4) RETURNING *",
-      [name, description, filtersString, userID]
+      "INSERT INTO communities (communityID, name, description, filters, adminUserID) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [communitiesID[0].communityid + 1, name, description, filtersString, userID]
     );
 
     console.log(newCommunity);

@@ -8,7 +8,7 @@ include ('../partials/message') %>
   
 
 </head>
-<body>
+<body class="bg-light">
   <main>
     
     <div id="Container">
@@ -42,19 +42,19 @@ include ('../partials/message') %>
                 <a class="btn btn-outline-success" href='/filter/Sorority' role="button">Sorority</a>
               </div>
             </div>
-            <input type="text" id="communitySearch" placeholder="Search Community" style="background-color: #78c2ad; border-radius: 15px; margin-top:10px; padding:2px; margin-left: 39%;">
+            <input type="text" id="communitySearch" placeholder="Search Community" class="form-control mt-2">
           </div>
 
 
         <hr />
-          <table class="table">
+          <table class="table  table-hover">
             <thead>
-              <tr>
+              <tr class="table-primary">
                 <!-- <th>Community ID</th> -->
-                <th style="background-color: #78c2ad; font-size: 20px; border-top-left-radius: 30px;">Community Name</th>
-                <th style="background-color: #78c2ad; font-size: 20px">Community Filter</th>
-                <th style="background-color: #78c2ad; font-size: 20px;padding-bottom: 37px">Community Description</th>
-                <th style="background-color: #78c2ad; border-top-right-radius: 30px;"></th>
+                <th style="border-top-left-radius: 30px;" scope="col">Community Name</th>
+                <th scope="col">Community Filter</th>
+                <th scope="col">Community Description</th>
+                <th scope="col" style="border-top-right-radius: 30px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@ include ('../partials/message') %>
                   <td><%= community.description %></td>
                   <td>
                     <div class="popup" onclick="myFunction('popup<%= community.name %>')">
-                      <button type="submit" id="joinbtn">Join</button>
+                      <button type="submit" id="joinbtn" class="btn btn-primary">Join</button>
                       <span class="popuptext" id="popup<%= community.name %>">Community Joined!</span>
                     </div>
                   </td>
@@ -81,20 +81,20 @@ include ('../partials/message') %>
 
       <div id="RandomEventContainer">
         <div class="title">Upcoming Events</div>
-        <input type="text" id="eventSearch" placeholder="Search Event" style="background-color: #78c2ad; border-radius: 15px; margin-top:10px; padding:2px; margin-left: 33%;">
+        <input type="text" id="eventSearch" placeholder="Search Event" class="form-control">
         <div class="spacing"></div>
         <hr />
-          <table class="table">
+          <table class="table table-hover">
             <thead>
-              <tr>
+              <tr class="table-primary">
                 <!-- <th>Event ID</th> -->
-                <th style="background-color: #78c2ad; font-size: 20px; border-top-left-radius: 30px;">Event Name</th>
-                <th style="background-color: #78c2ad; font-size: 20px;padding-bottom: 10px">Event Description</th>
-                <th style="background-color: #78c2ad; font-size: 20px;">Event Date</th>
+                <th style="border-top-left-radius: 30px;">Event Name</th>
+                <th>Event Description</th>
                 <!-- <th>Event Time</th> -->
-                <th style="background-color: #78c2ad; font-size: 20px;">Event Location</th>
+                <th>Event Start</th>
+                <th>Organised By</th>
                 <!-- <th>Event Community</th> -->
-                <th style="background-color: #78c2ad; border-top-right-radius: 30px;"></th>
+                <th style="border-top-right-radius: 30px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -102,15 +102,15 @@ include ('../partials/message') %>
               <tr>
                 <form method="POST" action="<%- "/addUserToEvent/" + event.id %>">
                   <!-- <td><%= event.eventid %></td> -->
-                  <td><%= event.name %></td>
+                  <td><%= event.title %></td>
                   <td><%= event.description %></td>
                   <td><%= event.start %></td>
                   <!-- <td><%= event.time %></td> -->
-                  <td><%= event.location %></td>
+                  <td><%= event.community_name %></td>
                   <!-- <td><%= event.communityid %></td> -->
                   <td>
                     <div class="popup" onclick="myFunction('popup<%= event.id %>')">
-                      <button type="submit">Join</button>
+                      <button type="submit" class="btn btn-primary">Join</button>
                       <span class="popuptext" id="popup<%= event.id %>">Event Joined!</span>
                     </div>
                   </td>

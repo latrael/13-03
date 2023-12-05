@@ -1,5 +1,4 @@
 body {
-  background-color: #f5f5f5;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -20,19 +19,6 @@ hr {
 form {
   background-color: #78c2ad;
   border-radius: 10px;
-}
-
-.table {
-  border-collapse: separate;
-  border-spacing: 5px; /* Adjust the value to set the desired spacing */
-}
-#communitySearch::placeholder {
-  text-align: center;
-  color: black; 
-}
-#eventSearch::placeholder {
-  text-align: center;
-  color: black; 
 }
 
 .filterContainer{
@@ -77,12 +63,8 @@ form {
 
 #CommunityPageContainer {
   /* flex: 2; Takes up 2/3 of the available space */
-  background-color: #DCDCDC; /* Optional: Background color for illustration */
   height: 600px;
   width: 850px;
-  
-  outline: 1px solid black;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   box-sizing: border-box; /* Include padding and border in the total width and height */
   overflow-y: scroll;
   padding: 0.75rem;
@@ -90,12 +72,9 @@ form {
 
 #RandomEventContainer {
   /* flex: 1; Takes up 1/3 of the available space */
-  background-color: #DCDCDC; /* Optional: Background color for illustration */
   height: 600px;
   width: 350px;
   margin-left: 50px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  outline: 1px solid black; 
   box-sizing: border-box; /* Include padding and border in the total width and height */
   overflow-y: scroll;
   /* overflow-x:scroll; */
@@ -110,22 +89,6 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#joinbtn{
-  background-color: #78c2ad;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
-  /* margin: 4px 2px; */
-  cursor: pointer;
-  border-radius: 12px;
-  /* margin-left: 10px; */
-  font-size: 13px;
 }
 
 
