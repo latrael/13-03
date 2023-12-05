@@ -5,20 +5,56 @@ include ('../partials/message') %>
 <head>
   <!-- <title>Discover Communities</title> -->
   <link rel="stylesheet" href="resources/css/discover.css" />
+  
+
 </head>
 <body>
   <main>
+    
     <div id="Container">
       <div id="CommunityPageContainer">
         <div class="title">Community Page</div>
+<!-- Container with Search Bar and Checkboxes -->
+          <div class="container">
+            <div class="container-with-filters">
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Academic' role="button">Academic</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Business' role="button">Business</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Club' role="button">Club</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Engineering' role="button">Engineering</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Fraternity' role="button">Fraternity</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Hobby' role="button">Hobby</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Sports' role="button">Sports</a>
+              </div>
+              <div class="form-check">
+                <a class="btn btn-outline-success" href='/filter/Sorority' role="button">Sorority</a>
+              </div>
+            </div>
+            <input type="text" id="communitySearch" placeholder="Search Community" style="background-color: #78c2ad; border-radius: 15px; margin-top:10px; padding:2px; margin-left: 39%;">
+          </div>
+
+
         <hr />
           <table class="table">
             <thead>
               <tr>
                 <!-- <th>Community ID</th> -->
-                <th>Community Name</th>
-                <th>Community Description</th>
-                <th></th>
+                <th style="background-color: #78c2ad; font-size: 20px; border-top-left-radius: 30px;">Community Name</th>
+                <th style="background-color: #78c2ad; font-size: 20px">Community Filter</th>
+                <th style="background-color: #78c2ad; font-size: 20px;padding-bottom: 37px">Community Description</th>
+                <th style="background-color: #78c2ad; border-top-right-radius: 30px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -27,10 +63,11 @@ include ('../partials/message') %>
                 <form method="POST" action="<%- "/addUserToCommunity/" + community.communityid %>">
                   <!-- <td><%= community.communityid %></td> -->
                   <td><%= community.name %></td>
+                  <td><%= community.filters %></td>
                   <td><%= community.description %></td>
                   <td>
                     <div class="popup" onclick="myFunction('popup<%= community.name %>')">
-                      <button type="submit">Join</button>
+                      <button type="submit" id="joinbtn">Join</button>
                       <span class="popuptext" id="popup<%= community.name %>">Community Joined!</span>
                     </div>
                   </td>
@@ -44,18 +81,20 @@ include ('../partials/message') %>
 
       <div id="RandomEventContainer">
         <div class="title">Upcoming Events</div>
+        <input type="text" id="eventSearch" placeholder="Search Event" style="background-color: #78c2ad; border-radius: 15px; margin-top:10px; padding:2px; margin-left: 33%;">
+        <div class="spacing"></div>
         <hr />
           <table class="table">
             <thead>
               <tr>
                 <!-- <th>Event ID</th> -->
-                <th>Event Name</th>
-                <th>Event Description</th>
-                <th>Event Date</th>
+                <th style="background-color: #78c2ad; font-size: 20px; border-top-left-radius: 30px;">Event Name</th>
+                <th style="background-color: #78c2ad; font-size: 20px;padding-bottom: 10px">Event Description</th>
+                <th style="background-color: #78c2ad; font-size: 20px;">Event Date</th>
                 <!-- <th>Event Time</th> -->
-                <th>Event Location</th>
+                <th style="background-color: #78c2ad; font-size: 20px;">Event Location</th>
                 <!-- <th>Event Community</th> -->
-                <th></th>
+                <th style="background-color: #78c2ad; border-top-right-radius: 30px;"></th>
               </tr>
             </thead>
             <tbody>
@@ -71,7 +110,7 @@ include ('../partials/message') %>
                   <!-- <td><%= event.communityid %></td> -->
                   <td>
                     <div class="popup" onclick="myFunction('popup<%= event.eventid %>')">
-                      <button type="submit">Join</button>
+                      <button type="submit" id="joinbtn">Join</button>
                       <span class="popuptext" id="popup<%= event.eventid %>">Event Joined!</span>
                     </div>
                   </td>
@@ -90,6 +129,40 @@ include ('../partials/message') %>
           popup.classList.add("hide");
         }, 1100);
       }
+
+      // Search Functionality
+      function search(inputId, containerId) {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById(inputId);
+        filter = input.value.toUpperCase();
+        table = document.getElementById(containerId);
+        tr = table.getElementsByTagName("tr"); //accessing the table rows
+        //tr is assigned the collection of all tr (table row) elements within the specified table.
+
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0]; // Accessing the first column to be searched which are the community/event names
+          if (td) {
+            txtValue = td.textContent || td.innerText; //retrieves the text content (txtValue)
+            
+            //this if statement checks if the uppercase version of the txtValue contains the uppercase version of the filter string. If it does, it means there's a match, and the row is displayed (tr[i].style.display = ""). Otherwise, the row is hidden (tr[i].style.display = "none").
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+
+      // Event and Community Search
+      document.getElementById("communitySearch").addEventListener("input", function () {
+        search("communitySearch", "CommunityPageContainer");
+      });
+
+      document.getElementById("eventSearch").addEventListener("input", function () {
+        search("eventSearch", "RandomEventContainer");
+      });
+
     </script>
   </main>
 </body>

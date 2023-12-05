@@ -230,25 +230,47 @@ app.get("/friends", (req, res) => {
 });
 
 app.get("/discover", async (req, res) => {
-  // res.render("pages/Discover");
-  const allCommunitiesQuery = `SELECT * FROM communities`;
-  const allEventsQuery = `SELECT * FROM events`;
-  try {
-    // Fetch data from the database
-    const communities = await db.any(allCommunitiesQuery);
-    const events = await db.any(allEventsQuery);
-    console.log(communities, events);
-
-    // Render the EJS template with the retrieved data
-    res.render("pages/Discover", {
-      allCommunities: communities,
-      allEvents: events,
-    });
-  } catch (error) {
-    console.error("Error in /discover route:", error);
-    res.status(500).send("Internal Server Error");
-  }
+    try {
+      console.log("testing");
+      const allCommunitiesQuery = `SELECT * FROM communities`;
+      const allEventsQuery = `SELECT * FROM events`;
+      // Fetch data from the database
+      const communities = await db.any(allCommunitiesQuery);
+      const events = await db.any(allEventsQuery);
+      // console.log(communities, events);
+      // Render the EJS template with the retrieved data
+      res.render("pages/Discover", {
+        allCommunities: communities,
+        allEvents: events,
+      });
+    } catch (error) {
+      console.error("Error in /discover route:", error);
+      res.status(500).send("Internal Server Error");
+    }
 });
+
+app.get("/filter/:type", async (req, res) => {
+  console.log("testing2")
+  const filter = req.params.type;
+    try {
+      const filteredCommunities = `SELECT * FROM communities WHERE filters = $1`;
+      const allEventsQuery = `SELECT * FROM events`;
+      // Fetch data from the database
+      const communities = await db.query(filteredCommunities,[filter]);
+      const events = await db.query(allEventsQuery);
+      // console.log(communities, events);
+      console.log("communities:", communities);
+      // Render the EJS template with the retrieved data
+      res.render("pages/Discover", {
+        allCommunities: communities,
+        allEvents: events,
+      });
+    } catch (error) {
+      console.error("Error in /discover route:", error);
+      res.status(500).send("Internal Server Error");
+    }
+});
+
 
 app.post("/addUserToCommunity/:id", async (req, res) => {
   const communityId = req.params.id;
@@ -262,7 +284,7 @@ app.post("/addUserToCommunity/:id", async (req, res) => {
     // console.log("community", communityId);
     // console.log("User", req.session.user)
     // console.log("userid", userId);
-    console.log("success");
+    // console.log("success");
 
     setTimeout(() => {
       res.redirect("/discover");
