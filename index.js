@@ -152,7 +152,7 @@ app.get("/community/:communityID", async (req, res) => {
   try {
     // Fetch community details
     const communityDetailsQuery = `
-      SELECT communities.name, communities.description, communities.filters, communities.communityID
+      SELECT communities.name, communities.description, communities.filters, communities.communityID, communities.adminUserID
       FROM communities
       WHERE communities.communityID = $1`;
 
@@ -170,7 +170,10 @@ app.get("/community/:communityID", async (req, res) => {
 
     if (communityDetails) {
       console.log('Community Members:', communityMembers);
-      res.render("pages/viewCommunity", { communityMembers,communityDetails} );
+      console.log("Community Details", communityDetails)
+
+
+      res.render("pages/viewCommunity", { communityMembers,communityDetails, "isAdmin": communityDetails.adminuserid == req.session.user.userid} );
           } else {
       // Handle case where the community is not found
       res.status(404).send('Community not found');
@@ -601,17 +604,34 @@ app.post ('/create-community', async (req, res) => {
       [name]
     );
 
-   if (existingCommunity > 0) {
+   if (existingCommunity.length > 0) {
       return res.render('pages/create', { message: 'Community already exists!', error: 'danger' });
     }
 
 
     const filtersString = Array.isArray(filters) ? filters.join(',') : '';
 
+
+    
     const newCommunity = await db.query(
       "INSERT INTO communities (name, description, filters, adminUserID) VALUES($1, $2, $3, $4) RETURNING *",
       [name, description, filtersString, userID]
     );
+
+    console.log(newCommunity);
+
+// joins automatically
+
+      const communityID = newCommunity[0].communityid;
+
+      await db.query(
+        "INSERT INTO users_to_communities (userID, communityID) VALUES($1, $2)",
+        [userID, communityID]
+      );
+
+
+
+
     res.render('pages/create', { message: 'Community created successfully!' });
 
   } catch (err) {
@@ -619,6 +639,7 @@ app.post ('/create-community', async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 
 
 // *****************************************************
