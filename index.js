@@ -81,7 +81,7 @@ async function loadProfile(arg) {
   SELECT *
   FROM users_to_events
   RIGHT JOIN events
-  ON users_to_events.eventID = events.eventID
+  ON users_to_events.eventID = events.id
   WHERE users_to_events.userID = $1`;
   const friendInfo = await db.query(fquery, [arg.userid]);
   const userInfo = arg;
