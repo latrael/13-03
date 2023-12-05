@@ -34,6 +34,23 @@
                         </p>
                     <% } %>
                 </div>
+
+                <div class="col-md-4 mt-4">
+                  <div class="list-group">
+                    <h5 class="list-group-item list-group-item-action active" aria-current="true">Links to Communities</h5>
+                    <% if (userCommunities.length > 0) { %>
+                      <% userCommunities.forEach(community => { %>
+                        <a href="/community/<%= community.communityid %>" class="list-group-item list-group-item-action">
+                          <%= community.name %>
+                        </a>
+                      <% }); %>
+                    <% } else { %>
+                      <p>You are not part of any communities yet. 
+                        <a href="/discover">Join</a> or 
+                        <a href="/create">create</a> communities to get started!
+                      </p>
+                    <% } %>
+                  </div>
             </div>
             <br>
                             <!-- NABIL DJABER CALENDER ELEMENTS-->
@@ -51,6 +68,8 @@
                             
                 
             </div>
+
+
         </div>
 
 
