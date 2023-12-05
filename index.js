@@ -107,16 +107,10 @@ app.get("/", async (req, res) => {
     });
   } else {
     const userCommunitiesQuery = 
-    `SELECT 
-    communities.name, communities_to_events.eventID 
-    FROM 
-    users_to_communities 
-    JOIN 
-    communities ON users_to_communities.communityID = communities.communityID 
-    JOIN 
-    communities_to_events ON communities.communityID = communities_to_events.communityID 
-    WHERE 
-    users_to_communities.userID = $1;`;
+    `SELECT communities.name, communities.communityID
+    FROM users_to_communities 
+    JOIN communities ON users_to_communities.communityID = communities.communityID 
+    WHERE users_to_communities.userID = $1`;
 
     const eventsQuery = `
     SELECT 
