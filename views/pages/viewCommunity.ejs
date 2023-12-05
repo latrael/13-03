@@ -9,7 +9,7 @@
         <h1><%= communityDetails.name %></h1>
         <p><%= communityDetails.description %></p>
         <% if (isAdmin) { %>
-          <button class="btn btn-primary">New Event</button>
+          <a href="/createEvent/<%= communityDetails.communityid %>" class="btn btn-primary" >New Event</a>
         <% } %>
       </div>
     </div>
