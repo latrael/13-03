@@ -19,7 +19,9 @@ CREATE TABLE communities (
     communityID SERIAL PRIMARY KEY,
     name VARCHAR(40),
     description VARCHAR(5000),
-    filters VARCHAR(250)
+    filters VARCHAR(250),
+    adminUserID INTEGER,
+    FOREIGN KEY (adminUserID) REFERENCES users(userID)
 );
 
 CREATE TABLE users_to_communities (
@@ -30,18 +32,23 @@ CREATE TABLE users_to_communities (
 );
 
 CREATE TABLE events (
-    eventID SERIAL PRIMARY KEY,
-    name VARCHAR(100),
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100),
     description TEXT,
-    date VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
-    location TEXT
+    start VARCHAR(100), --2002-04-20 17:31:12.66 for timestamp 
+    "end" VARCHAR(100),
+
+    -- name VARCHAR(100),
+    -- date VARCHAR(100),
+    -- location TEXT
+
 );
 
 CREATE TABLE users_to_events (
     userID INTEGER,
     eventID INTEGER,
     FOREIGN KEY (userID) REFERENCES users(userID),
-    FOREIGN KEY (eventID) REFERENCES events(eventID)
+    FOREIGN KEY (eventID) REFERENCES events(id)
 );
 
 CREATE TABLE communities_to_events (
@@ -49,5 +56,5 @@ CREATE TABLE communities_to_events (
     communityID INTEGER,
     eventID INTEGER,
     FOREIGN KEY (communityID) REFERENCES communities(communityID),
-    FOREIGN KEY (eventID) REFERENCES events(eventID)
+    FOREIGN KEY (eventID) REFERENCES events(id)
 ); 
