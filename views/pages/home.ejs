@@ -1,7 +1,11 @@
 <%- include ('../partials/header') %> 
 <%- include ('../partials/menu') %>
-
-<body onload="initializeContent()">
+<script src="resources/js/script.js"></script>
+<script src='https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js'></script>
+<script>
+  var communityEventsData = <%- JSON.stringify(communityEvents) %>;
+</script>
+<body onload="initializeContent(communityEventsData)">
 
   <main>
 
@@ -15,12 +19,7 @@
             <% if (userCommunities.length > 0) { %>
                 <% userCommunities.forEach(community => { %>
                   <% if(communityEvents.length > 0) { %>
-                    <script>
-                      var communityEventsData = <%- JSON.stringify(communityEvents) %>;
-                    </script>
-                      <button class="list-group-item list-group-item-action"
-                      onclick="loadCommunityCalendar('<%= community.name %>', communityEventsData)" method="post"><%= community.name %>
-                      </button>
+                      <button class="list-group-item list-group-item-action"><%= community.name %></button>
                       
                       <% } %>
                     <% }); %>
