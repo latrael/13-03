@@ -11,6 +11,13 @@ const session = require("express-session"); // To set the session object. To sto
 const bcrypt = require("bcrypt"); //  To hash passwords
 const axios = require("axios"); // To make HTTP requests from our server. We'll learn more about it in Part B.
 app.use(express.static("src"));
+
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({ 
+  cloud_name: 'dzhqemlkr', 
+  api_key: '934727676964224', 
+  api_secret: 'pYMapPWdI3pStFxJP6MKeeJNpI4' 
+});
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
 // *****************************************************
