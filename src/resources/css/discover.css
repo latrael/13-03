@@ -1,5 +1,8 @@
 body {
+<<<<<<< HEAD
+=======
   background-color: #f5f5f5;
+>>>>>>> main
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -22,6 +25,11 @@ form {
   border-radius: 10px;
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> main
 .table {
   border-collapse: separate;
   border-spacing: 5px; /* Adjust the value to set the desired spacing */
@@ -35,6 +43,10 @@ form {
   color: black; 
 }
 
+<<<<<<< HEAD
+=======
+>>>>>>> main
+>>>>>>> main
 .filterContainer{
   /* display: flex;
   justify-content: center;
@@ -77,12 +89,17 @@ form {
 
 #CommunityPageContainer {
   /* flex: 2; Takes up 2/3 of the available space */
+<<<<<<< HEAD
   background-color: #DCDCDC; /* Optional: Background color for illustration */
   height: 600px;
   width: 50%;
   
   outline: 1px solid black;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+=======
+  height: 600px;
+  width: 850px;
+>>>>>>> main
   box-sizing: border-box; /* Include padding and border in the total width and height */
   overflow-y: scroll;
   padding: 0.75rem;
@@ -90,12 +107,17 @@ form {
 
 #RandomEventContainer {
   /* flex: 1; Takes up 1/3 of the available space */
+<<<<<<< HEAD
   background-color: #DCDCDC; /* Optional: Background color for illustration */
   height: 600px;
   width: 47%;
   margin-left: 25px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   outline: 1px solid black; 
+=======
+  height: 600px;
+  margin-left: 50px;
+>>>>>>> main
   box-sizing: border-box; /* Include padding and border in the total width and height */
   overflow-y: scroll;
   /* overflow-x:scroll; */
@@ -111,6 +133,7 @@ form {
   justify-content: center;
 }
 
+<<<<<<< HEAD
 #joinbtn{
   background-color: #78c2ad;
   border: none;
@@ -128,6 +151,8 @@ form {
 }
 
 
+=======
+>>>>>>> main
 /* Popup container - can be anything you want */
 .popup {
   position: relative;
