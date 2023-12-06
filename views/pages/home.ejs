@@ -6,59 +6,50 @@
   var communityEventsData = <%- JSON.stringify(communityEvents) %>;
 </script>
 <body onload="initializeContent(communityEventsData)">
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
 
+        <form id="events" action="add_user_to_events" method="POST" style="padding: 3%;">
+            <div class="form-group">
+                <h5 id="modalTitleHome"></h5>
+                <p id="startHome"></p>
+                <p id="endHome"></p>
+                 <p id="descriptionHome"></p>
+                <input type="hidden" id="eventidHome" name="eventid" value="">
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit"  id="joinHome" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Join event</button>
+            <button type="submit" formaction="remove_user_event" id="leaveHome" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Leave event</button>
+        </form>
+    </div>
+    </div>
+</div>
   <main>
 
     <div class="container">
       <div class="row">
 
         <!-- User Communities Section -->
-        <div class="col-md-4 mt-4">
-          <div class="list-group">
-            <h5 class="list-group-item list-group-item-action active" aria-current="true">Your Communities</h5>
-            <% if (userCommunities.length > 0) { %>
-                <% userCommunities.forEach(community => { %>
-                  <% if(communityEvents.length > 0) { %>
-                      <button class="list-group-item list-group-item-action"><%= community.name %></button>
-                      
-                      <% } %>
-                    <% }); %>
-                 
-            
-            <% } else { %>
-                <p>You are not part of any communities yet. 
-                    <a href="/discover">Join</a> or 
-                    <a href="/create">create</a> communities to get started!
-                </p>
-            <% } %>
-        </div>
 
-          <div class="list-group mt-4">
+          <div class="list-group" style="background-color: white; max-height: 300px; overflow-y: auto;">
             <h5 class="list-group-item list-group-item-action active" aria-current="true">Links to Communities</h5>
-            <% if (userCommunities.length > 0) { %>
-              <% userCommunities.forEach(community => { %>
-                <a href="/community/<%= community.communityid %>" class="list-group-item list-group-item-action">
-                  <%= community.name %>
-                </a>
-              <% }); %>
-            <% } else { %>
-              <p>You are not part of any communities yet. 
-                <a href="/discover">Join</a> or 
-                <a href="/create">create</a> communities to get started!
-              </p>
-            <% } %>
+              <% if (userCommunities.length > 0) { %>
+                <% userCommunities.forEach(community => { %>
+                  <a href="/community/<%= community.communityid %>" class="list-group-item list-group-item-action">
+                    <%= community.name %>
+                  </a>
+                <% }); %>
+              <% } else { %>
+                <p>You are not part of any communities yet. 
+                  <a href="/discover">Join</a> or 
+                  <a href="/create">create</a> communities to get started!
+                </p>
+              <% } %>
           </div>
-        </div>
 
         <!-- Calendar Section -->
-        <div class="col-md-8 mt-4">
-          <div id="title" style="
-            border-radius: 6px;
-            padding: 4px;
-            padding-right: 5px;
-            padding-left: 5px;" class="bg-primary text-center mb-3">
-            <h3 id="calendar-name" class="text-light mt-1"></h3>
-          </div>
+        <div class="col-md-10 mt-10">
           <div id="calendar"></div>
         </div>
    
