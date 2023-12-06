@@ -115,15 +115,11 @@ app.get("/", async (req, res) => {
     SELECT 
     events.* 
     FROM 
-    users_to_communities 
+    users_to_events 
     JOIN 
-    communities ON users_to_communities.communityID = communities.communityID 
-    JOIN 
-    communities_to_events ON communities.communityID = communities_to_events.communityID 
-    JOIN 
-    events ON communities_to_events.eventID = events.id
+    events ON users_to_events.eventID = events.id 
     WHERE 
-    users_to_communities.userID = $1;`;
+    users_to_events.userID = $1;`;
 
       //const userEventsQuery = `SELECT communities.name FROM users_to_communities JOIN communities ON users_to_communities.communityID = communities.communityID WHERE users_to_communities.userID = $1`;
 
