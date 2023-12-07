@@ -249,18 +249,33 @@ form {
             <tbody>
               <% allCommunities.forEach(community => { %>
               <tr>
-                <form method="POST" action="<%- "/addUserToCommunity/" + community.communityid %>">
+                <% if(community.status == "join"){ %>
+                  <form method="POST" action="<%- "/addUserToCommunity/" + community.communityid %>">
+                    <!-- <td><%= community.communityid %></td> -->
+                    <td><%= community.name %></td>
+                    <td><%= community.filters %></td>
+                    <td><%= community.description %></td>
+                    <td>
+                      <div class="popup" onclick="myFunction('popup<%= community.name %>')">
+                        <button type="submit" id="joinbtn" class="btn btn-primary">Join</button>
+                        <span class="popuptext" id="popup<%= community.name %>">Community Joined!</span>
+                      </div>
+                    </td>
+                  </form>
+               <% } else if(community.status == "leave"){ %>
+                <form method="POST" action="<%- "/leave_community2/" + community.communityid %>">
                   <!-- <td><%= community.communityid %></td> -->
                   <td><%= community.name %></td>
                   <td><%= community.filters %></td>
                   <td><%= community.description %></td>
                   <td>
                     <div class="popup" onclick="myFunction('popup<%= community.name %>')">
-                      <button type="submit" id="joinbtn" class="btn btn-primary">Join</button>
-                      <span class="popuptext" id="popup<%= community.name %>">Community Joined!</span>
+                      <button type="submit" id="joinbtn" class="btn btn-primary">Leave</button>
+                      <span class="popuptext" id="popup<%= community.name %>">Community Left!</span>
                     </div>
                   </td>
                 </form>
+               <% } %>
               </tr>
               <% }); %>
             </tbody>
@@ -291,24 +306,45 @@ form {
             <tbody>
               <% allEvents.forEach(event => { %>
               <tr>
-                <form method="POST" action="<%- "/addUserToEvent/" + event.id %>">
+                <% if(event.status == "join"){ %>
+                  <form method="POST" action="<%- "/addUserToEvent/" + event.id %>">
 
-                  <!-- <td><%= event.id %></td> -->
-                  <td><%= event.title %></td>
-                  <td><%= event.description %></td>
-                  <td><%= event.start %></td>
-                  <td><%= event.end %></td>
+                    <!-- <td><%= event.id %></td> -->
+                    <td><%= event.title %></td>
+                    <td><%= event.description %></td>
+                    <td><%= event.start %></td>
+                    <td><%= event.end %></td>
+  
+                    <!-- <td><%= event.time %></td> -->
+                    <!--<td><%= event.location %></td>-->
+                    <td><%= event.community_name %></td>
+                    <td>
+                      <div class="popup" onclick="myFunction('popup<%= event.id %>')">
+                        <button type="submit"class="btn btn-primary">Join</button>
+                        <span class="popuptext" id="popup<%= event.id %>">Event <br>Joined!</span>
+                      </div>
+                    </td>
+                  </form>
+               <% } else if(event.status == "leave"){ %>
+                  <form method="POST" action="remove_user_event3">
 
-                  <!-- <td><%= event.time %></td> -->
-                  <!--<td><%= event.location %></td>-->
-                  <td><%= event.community_name %></td>
-                  <td>
-                    <div class="popup" onclick="myFunction('popup<%= event.id %>')">
-                      <button type="submit"class="btn btn-primary">Join</button>
-                      <span class="popuptext" id="popup<%= event.id %>">Event <br>Joined!</span>
-                    </div>
-                  </td>
-                </form>
+                    <!-- <td><%= event.id %></td> -->
+                    <td><%= event.title %></td>
+                    <td><%= event.description %></td>
+                    <td><%= event.start %></td>
+                    <td><%= event.end %></td>
+                    <input type="hidden" id="eventid" name="eventid" value="<%=event.id%>">
+                    <!-- <td><%= event.time %></td> -->
+                    <!--<td><%= event.location %></td>-->
+                    <td><%= event.community_name %></td>
+                    <td>
+                      <div class="popup" onclick="myFunction('popup<%= event.id %>')">
+                        <button type="submit"class="btn btn-primary">Leave</button>
+                        <span class="popuptext" id="popup<%= event.id %>">Event <br>Joined!</span>
+                      </div>
+                    </td>
+                  </form>
+               <% } %>
               </tr>
               <% }); %>
             </tbody>

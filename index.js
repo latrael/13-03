@@ -280,6 +280,18 @@ app.post("/leave_community/:id",async (req, res) =>{
   }
 });
 
+app.post("/leave_community2/:id",async (req, res) =>{
+  const communityId = req.params.id;
+  try{
+    const query = "DELETE FROM users_to_communities WHERE userID = $1 AND communityID =$2 returning *";
+    await db.one(query, [req.session.user.userid,communityId]);
+    res.redirect("/discover");
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
 app.post("/community/add_user_to_events",async (req, res) =>{
   const user1 = req.session.user.userid;
   try{
@@ -457,7 +469,10 @@ app.get("/friendProfile/:friendID", async (req, res) => {
 
 app.get("/friends", async (req, res) => {
   if(req.session.user == undefined){
-    res.render("pages/login")
+    res.render("pages/login",{
+      message: "Log in to view your friends",
+      error: "danger"
+    });
   }
   else{
     try{
@@ -817,23 +832,75 @@ app.post("/remove_friend",async (req, res) =>{
 });
 
 app.get("/discover", async (req, res) => {
-  try {
-    console.log("testing");
-    const allCommunitiesQuery = `SELECT * FROM communities`;
-    // const allEventsQuery = `SELECT * FROM events`;
-    const allEventsQuery = `SELECT  e.id,  e.title,  e.description,  e.start,  e.end,  c.name AS community_name FROM events e JOIN  communities_to_events cte ON e.id = cte.eventID JOIN  communities c ON cte.communityID = c.communityID;`;
-    // Fetch data from the database
-    const communities = await db.any(allCommunitiesQuery);
-    const events = await db.any(allEventsQuery);
-    // console.log(communities, events);
-    // Render the EJS template with the retrieved data
-    res.render("pages/Discover", {
-      allCommunities: communities,
-      allEvents: events,
+  if(req.session.user == undefined){
+    res.render("pages/login",{
+      message: "Log in to view the discover page",
+      error: "danger"
     });
-  } catch (error) {
-    console.error("Error in /discover route:", error);
-    res.status(500).send("Internal Server Error");
+  }
+  else{
+    try {
+      console.log("testing");
+      const allCommunitiesQuery = `SELECT * FROM communities`;
+      const userCommunitiesQuery = `SELECT * FROM users_to_communities WHERE userID = $1`;
+      const userEventsQuery = `SELECT * FROM users_to_events WHERE userID = $1`;
+      // const allEventsQuery = `SELECT * FROM events`;
+      const allEventsQuery = `SELECT  e.id,  e.title,  e.description,  e.start,  e.end,  c.name AS community_name FROM events e JOIN  communities_to_events cte ON e.id = cte.eventID JOIN  communities c ON cte.communityID = c.communityID;`;
+      // Fetch data from the database
+      const communities1 = await db.any(allCommunitiesQuery);
+      const events1 = await db.any(allEventsQuery);
+      const userCommunities = await db.any(userCommunitiesQuery,[req.session.user.userid]);
+      const userEvents = await db.any(userEventsQuery,[req.session.user.userid]);
+  
+      var communities = [];
+      for(i = 0; i < communities1.length; i++){
+        var status = "join";
+        for(j = 0; j < userCommunities.length; j++){
+          if(userCommunities[j].communityid == communities1[i].communityid){
+            status = "leave";
+          }
+        }
+        const community = {
+          communityid: communities1[i].communityid,
+          name:communities1[i].name,
+          description: communities1[i].description,
+          filters: communities1[i].filters,
+          adminUserID: communities1[i].adminUserid,
+          status: status,
+        }
+        communities[i] = community;
+      }
+
+      var events = [];
+      for(i = 0; i < events1.length; i++){
+        var status = "join";
+        for(j = 0; j < userEvents.length; j++){
+          if(userEvents[j].eventid == events1[i].id){
+            status = "leave";
+          }
+        }
+        const event = {
+          id: events1[i].id,
+          title: events1[i].title,
+          description:events1[i].description,
+          start: events1[i].start,
+          end: events1[i].end,
+          status: status,
+        }
+        events[i] = event;
+      }
+      console.log(events);
+      console.log(userEvents);
+      // console.log(communities, events);
+      // Render the EJS template with the retrieved data
+      res.render("pages/Discover", {
+        allCommunities: communities,
+        allEvents: events,
+      });
+    } catch (error) {
+      console.error("Error in /discover route:", error);
+      res.status(500).send("Internal Server Error");
+    }
   }
 });
 
@@ -843,9 +910,52 @@ app.get("/filter/:type", async (req, res) => {
   try {
     const filteredCommunities = `SELECT * FROM communities WHERE filters = $1`;
     const allEventsQuery = `SELECT * FROM events`;
+    const userCommunitiesQuery = `SELECT * FROM users_to_communities WHERE userID = $1`;
+    const userEventsQuery = `SELECT * FROM users_to_events WHERE userID = $1`;
     // Fetch data from the database
-    const communities = await db.query(filteredCommunities, [filter]);
-    const events = await db.query(allEventsQuery);
+    const communities1 = await db.query(filteredCommunities, [filter]);
+    const events1 = await db.query(allEventsQuery);
+    const userCommunities = await db.any(userCommunitiesQuery,[req.session.user.userid]);
+    const userEvents = await db.any(userEventsQuery,[req.session.user.userid]);
+
+    var communities = [];
+      for(i = 0; i < communities1.length; i++){
+        var status = "join";
+        for(j = 0; j < userCommunities.length; j++){
+          if(userCommunities[j].communityid == communities1[i].communityid){
+            status = "leave";
+          }
+        }
+        const community = {
+          communityid: communities1[i].communityid,
+          name:communities1[i].name,
+          description: communities1[i].description,
+          filters: communities1[i].filters,
+          adminUserID: communities1[i].adminUserid,
+          status: status,
+        }
+        communities[i] = community;
+      }
+
+      var events = [];
+      for(i = 0; i < events1.length; i++){
+        var status = "join";
+        for(j = 0; j < userEvents.length; j++){
+          if(userEvents[j].eventid == events1[i].id){
+            status = "leave";
+          }
+        }
+        const event = {
+          id: events1[i].id,
+          title: events1[i].title,
+          description:events1[i].description,
+          start: events1[i].start,
+          end: events1[i].end,
+          status: status,
+        }
+        events[i] = event;
+      }
+
     // console.log(communities, events);
     console.log("communities:", communities);
     // Render the EJS template with the retrieved data
@@ -861,17 +971,24 @@ app.get("/filter/:type", async (req, res) => {
 
 app.post("/addUserToCommunity/:id", async (req, res) => {
   const communityId = req.params.id;
-  // console.log("req.body", communityId);
-  // const communityId = allCommunities;
-  // console.log(communityId);
   const userId = req.session.user.userid;
   const query = `INSERT INTO users_to_communities (userID, communityID) VALUES ($1, $2)`;
+  const communityMembersQuery = `
+      SELECT users.fullName, users.username
+      FROM users
+      JOIN users_to_communities ON users.userID = users_to_communities.userID
+      WHERE users_to_communities.communityID = $1`;
   try {
-    await db.query(query, [userId, communityId]);
-    // console.log("community", communityId);
-    // console.log("User", req.session.user)
-    // console.log("userid", userId);
-    // console.log("success");
+    const members = await db.manyOrNone(communityMembersQuery, [communityId]);
+    var member = "false"
+    for(i = 0; i < members.length; i++){
+      if(members[i].username == req.session.user.username){
+        member = "true";
+      }
+    }
+    if(member == "false"){
+      await db.query(query, [userId, communityId]);
+    }
 
     setTimeout(() => {
       res.redirect("/discover");
@@ -905,6 +1022,18 @@ app.post("/addUserToEvent/:id", async (req, res) => {
     console.log("error:", error);
     console.error("Error in /addUserToEvent route:", error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/remove_user_event3",async (req, res) =>{
+  const user1 = req.session.user.userid;
+  try{
+    const query = "DELETE FROM users_to_events WHERE userID = $1 AND eventID =$2 returning *";
+    await db.one(query, [user1,req.body.eventid]);
+    res.redirect("/discover")
+  }
+  catch (error) {
+    console.error("Error: " + error);
   }
 });
 
