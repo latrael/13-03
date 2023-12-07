@@ -77,7 +77,7 @@ async function loadProfile(arg) {
   FROM friends
   RIGHT JOIN users
   ON friends.useridB = users.userid
-  WHERE userIDA = $1`;
+  WHERE userIDA = $1 AND status = 'friends'`;
   const cquery = `
   SELECT *
   FROM users_to_communities
@@ -164,19 +164,67 @@ app.get("/community/:communityID", async (req, res) => {
       FROM users
       JOIN users_to_communities ON users.userID = users_to_communities.userID
       WHERE users_to_communities.communityID = $1`;
+    
+    const communityEventsQuery = `
+      SELECT *
+      FROM communities_to_events
+      JOIN events ON communities_to_events.eventID = events.id
+      WHERE communities_to_events.communityID = $1`;
 
-    const [communityDetails, communityMembers] = await Promise.all([
+    const yourEventsQuery = `
+      SELECT *
+      FROM users_to_events
+      WHERE users_to_events.userID = $1`;
+
+    const [communityDetails, communityMembers, communityEvents, yourEvents] = await Promise.all([
       db.oneOrNone(communityDetailsQuery, [communityID]),
       db.manyOrNone(communityMembersQuery, [communityID]),
+      db.manyOrNone(communityEventsQuery, [communityID]),
+      db.manyOrNone(yourEventsQuery, [req.session.user.userid]),
     ]);
 
     if (communityDetails) {
       console.log("Community Members:", communityMembers);
       console.log("Community Details", communityDetails);
+      console.log("community Events", communityEvents);
+      console.log("Your events", yourEvents)
 
+    var index = 0;
+    var events = [];
+    for(i = 0; i < communityEvents.length; i++){
+      var status = "false";
+      for(j = 0; j < yourEvents.length; j++){
+        if(yourEvents[j].eventid == communityEvents[i].eventid){
+          status = "true";
+        }
+      }
+      const event = {
+        title: communityEvents[i].title,
+        start: communityEvents[i].start,
+        end: communityEvents[i].end,
+        extendedProps: {
+          location: communityEvents[i].description,
+          eventID: communityEvents[i].id,
+          communityID: communityEvents[i].communityid,
+          status: status,
+        },
+      };
+      events[index] = event;
+      index = index + 1;
+    }
+    var member = "false";
+    for(i = 0; i < communityMembers.length; i++){
+      if(communityMembers[i].username == req.session.user.username){
+        member = "true";
+      }
+    }
+    console.log(events);
       res.render("pages/viewCommunity", {
         communityMembers,
         communityDetails,
+        events,
+        member,
+        user: req.session.user,
         isAdmin: communityDetails.adminuserid == req.session.user.userid,
       });
     } else {
@@ -186,6 +234,73 @@ app.get("/community/:communityID", async (req, res) => {
   } catch (error) {
     console.error("Error in /community/:communityID route:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/addUserToCommunity2/:id", async (req, res) => {
+  const communityId = req.params.id;
+  const userId = req.session.user.userid;
+  const query = `INSERT INTO users_to_communities (userID, communityID) VALUES ($1, $2)`;
+  const communityMembersQuery = `
+      SELECT users.fullName, users.username
+      FROM users
+      JOIN users_to_communities ON users.userID = users_to_communities.userID
+      WHERE users_to_communities.communityID = $1`;
+  try {
+    const members = await db.manyOrNone(communityMembersQuery, [communityId]);
+    var member = "false"
+    for(i = 0; i < members.length; i++){
+      if(members[i].username == req.session.user.username){
+        member = "true";
+      }
+    }
+    if(member == "false"){
+      await db.query(query, [userId, communityId]);
+    }
+
+    setTimeout(() => {
+      res.redirect("/community/"+communityId);
+    }, 2000);
+  } catch (error) {
+    console.log("error:", error);
+    console.error("Error in /addUserToCommunity route:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/leave_community/:id",async (req, res) =>{
+  const communityId = req.params.id;
+  try{
+    const query = "DELETE FROM users_to_communities WHERE userID = $1 AND communityID =$2 returning *";
+    await db.one(query, [req.session.user.userid,communityId]);
+    res.redirect("/community/" + communityId);
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
+app.post("/community/add_user_to_events",async (req, res) =>{
+  const user1 = req.session.user.userid;
+  try{
+    const query = "INSERT INTO users_to_events (userID, eventID) VALUES ($1, $2) returning *";
+    await db.one(query, [user1, req.body.eventid]);
+    res.redirect("/community/" + req.body.communityid)
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
+app.post("/community/remove_user_event",async (req, res) =>{
+  const user1 = req.session.user.userid;
+  try{
+    const query = "DELETE FROM users_to_events WHERE userID = $1 AND eventID =$2 returning *";
+    await db.one(query, [user1,req.body.eventid]);
+    res.redirect("/community/" + req.body.communityid)
+  }
+  catch (error) {
+    console.error("Error: " + error);
   }
 });
 
@@ -634,10 +749,6 @@ app.post("/add_user_to_events",async (req, res) =>{
   }
 });
 
-app.post("/test",async (req, res) =>{
-    res.redirect("/friends")
-});
-
 app.post("/remove_user_event",async (req, res) =>{
   const user1 = req.session.user.userid;
   try{
@@ -648,6 +759,34 @@ app.post("/remove_user_event",async (req, res) =>{
   catch (error) {
     console.error("Error: " + error);
   }
+});
+
+app.post("/add_user_to_events2",async (req, res) =>{
+  const user1 = req.session.user.userid;
+  try{
+    const query = "INSERT INTO users_to_events (userID, eventID) VALUES ($1, $2) returning *";
+    await db.one(query, [user1, req.body.eventid]);
+    res.redirect("/")
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
+app.post("/remove_user_event2",async (req, res) =>{
+  const user1 = req.session.user.userid;
+  try{
+    const query = "DELETE FROM users_to_events WHERE userID = $1 AND eventID =$2 returning *";
+    await db.one(query, [user1,req.body.eventid]);
+    res.redirect("/")
+  }
+  catch (error) {
+    console.error("Error: " + error);
+  }
+});
+
+app.post("/test",async (req, res) =>{
+    res.redirect("/friends")
 });
 
 app.post("/accept_friend",async (req, res) =>{

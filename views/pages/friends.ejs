@@ -45,7 +45,9 @@
                                 <form action="add_friend" method="POST">
                                     <div class="form-group">
                                         <input type="hidden" id="userADD" name="userADD" value="<%= allUsers[i].userid %>">
-                                        <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= allUsers[i].fullname %></button>
+                                        <a href="#" class="list-group-item list-group-item-action" style="width: 73%; display: inline-block;">
+                                            <%= allUsers[i].fullname %>
+                                        </a>
                                         <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Add</button>
                                     </div> 
                                 </form>
@@ -56,7 +58,9 @@
                                  <form action="accept_friend" method="POST">
                                      <div class="form-group">
                                          <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                         <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %></button>
+                                         <a href="#" class="list-group-item list-group-item-action" style="width: 73%; display: inline-block;">
+                                            <%= friend[i].fullname %>
+                                        </a>
                                          <button type="submit" name="accept" id="accept" class="btn btn-primary" style="width: 18%; display: inline-block;" >Accept</button>
                                          <button type="submit" formaction="remove_friend" name="decline" id="decline" class="btn btn-primary" style="width: 5%; display: inline-block; padding-left: 0%; padding-right: 0%;" >X</button>
                                      </div> 
@@ -68,7 +72,9 @@
                                      <form action="remove_friend" method="POST">
                                          <div class="form-group">
                                              <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                             <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %></button>
+                                             <a href="#" class="list-group-item list-group-item-action" style="width: 73%; display: inline-block;">
+                                                <%= friend[i].fullname %>
+                                            </a>
                                              <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Remove</button>
                                          </div> 
                                      </form>
@@ -79,7 +85,9 @@
                                      <form action="remove_friend" method="POST">
                                          <div class="form-group">
                                              <input type="hidden" id="userid" name="userid" value="<%= friend[i].useridb %>">
-                                             <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= friend[i].fullname %> (Pending)</button>
+                                             <a href="#" class="list-group-item list-group-item-action" style="width: 73%; display: inline-block;">
+                                                <%= friend[i].fullname %> (Pending)
+                                            </a>
                                              <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >X</button>
                                          </div> 
                                      </form>
@@ -90,7 +98,9 @@
                                     <form action="add_friend" method="POST">
                                         <div class="form-group">
                                             <input type="hidden" id="userADD" name="userADD" value="<%= allUsers[i].userid %>">
-                                            <button class="list-group-item list-group-item-action" style="display: inline-block; width: 73%; text-align: left;"><%= allUsers[i].fullname %></button>
+                                            <a href="#" class="list-group-item list-group-item-action" style="width: 73%; display: inline-block;">
+                                                <%= allUsers[i].fullname %>
+                                              </a>
                                             <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Add</button>
                                         </div> 
                                     </form>
@@ -103,7 +113,9 @@
                     <h5 class="list-group-item list-group-item-action active"  aria-current="true">Friends Communities</h5>
                     <div class="scroll">
                         <% for(var i=0; i < community.length; i++) {%>
-                            <a href="#" class="list-group-item list-group-item-action"><%= community[i].name %></a>
+                            <a href="/community/<%= community[i].communityid %>" class="list-group-item list-group-item-action">
+                                <%= community[i].name %>
+                              </a>
                          <% } %>
                     </div>
                 </div>

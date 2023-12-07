@@ -1,32 +1,114 @@
 <%- include ('../partials/header') %> 
 <%- include ('../partials/menu') %>
 
-<div class="container">
-  <div class="row">
-    <!-- Left Section for Community Name and Description -->
-    <div class="col-md-8 mt-4">
-      <div class="community-details">
-        <h1><%= communityDetails.name %></h1>
-        <p><%= communityDetails.description %></p>
-        <% if (isAdmin) { %>
-          <a href="/createEvent/<%= communityDetails.communityid %>" class="btn btn-primary" >New Event</a>
-        <% } %>
-      </div>
-    </div>
+<body onload="loadCommunityCalendar2(eventsData)">
+  <script>
+    var eventsData = <%- JSON.stringify(events) %>;
+    console.log(eventsData);
 
-    <!-- Right Section for Community Members -->
-    <div class="col-md-4 mt-4">
-      <div class="list-group">
-        <h5 class="list-group-item list-group-item-action active" aria-current="true">Community Members</h5>
-        <% communityMembers.forEach(member => { %>
-          <a class="list-group-item list-group-item-action">
-            <%= member.fullName %> Username: <%= member.username %>
-          </a>
-        <% }); %>
+    function loadCommunityCalendar2(friends_events) {
+      var calendarEl = document.getElementById('calendar');
+      console.log(friends_events);
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+      eventClick: function(info) {
+         var eventObj = info.event;
+          console.log(info.event);
+          document.getElementById('modalTitle').innerHTML = info.event.title;
+          document.getElementById('description').innerHTML = info.event.extendedProps.location;
+          document.getElementById('eventid').value = info.event.extendedProps.eventID;
+          document.getElementById('communityid').value = info.event.extendedProps.communityID;
+          document.getElementById('start').innerHTML = "Start: "+ info.event.start;
+          document.getElementById('end').innerHTML = "End: "+ info.event.end;
+          if(info.event.extendedProps.status == 'false'){
+            document.getElementById('join').style.display = "inline-block";
+            document.getElementById('leave').style.display = "none";
+          }
+         else{
+            document.getElementById('leave').style.display = "inline-block";
+            document.getElementById('join').style.display = "none";
+          }
+          //document.getElementById('description').innerHTML = info.event.extendedProps.location; 
+          $("#myModal").modal("toggle");                
+          },
+      events: friends_events
+      });
+      var calendarTitle = document.getElementById('calendar-name');
+      var communityName = 'Friends Events';
+      calendarTitle.innerHTML = "Events";
+      calendar.render();
+      };
+
+  </script>
+  <div class="container">
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+          <form id="events" action="add_user_to_events" method="POST" style="padding: 3%;">
+              <div class="form-group">
+                  <h5 id="modalTitle"></h5>
+                  <p id="start"></p>
+                  <p id="end"></p>
+                  <p id="description"></p>
+                  <input type="hidden" id="eventid" name="eventid" value="">
+                  <input type="hidden" id="communityid" name="communityid" value="">
+              </div>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit"  id="join" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Join event</button>
+              <button type="submit" formaction="remove_user_event" id="leave" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;">Leave event</button>
+          </form>
+      </div>
+      </div>
+  </div>
+    <div class="row">
+      <!-- Left Section for Community Name and Description -->
+      <div class="col-md-8 mt-4">
+        <div class="community-details">
+          <h1><%= communityDetails.name %></h1>
+          <p><%= communityDetails.description %></p>
+          <% if (isAdmin) { %>
+            <a href="/createEvent/<%= communityDetails.communityid %>" class="btn btn-primary" >New Event</a>
+          <% } %>
+        </div>
+      </div>
+  
+      <!-- Right Section for Community Members -->
+      <div class="col-md-4 mt-4">
+        <div class="list-group">
+          <h5 class="list-group-item list-group-item-action active" aria-current="true">Community Members</h5>
+          <% communityMembers.forEach(member => { %>
+            <a class="list-group-item list-group-item-action">
+              <%= member.fullName %> Username: <%= member.username %>
+            </a>
+          <% }); %>
+        </div>
+       <% if(member == "false"){ %>
+        <form  method="POST" action="<%- "/addUserToCommunity2/" + communityDetails.communityid %>">
+          <div class="form-group">
+              <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Join</button>
+          </div> 
+        </form>
+       <% } else { %>
+        <form  method="POST" action="<%- "/leave_community/" + communityDetails.communityid %>">
+          <div class="form-group">
+              <button type="submit" class="btn btn-primary" style="width: 25%; display: inline-block;" >Leave</button>
+          </div> 
+        </form>
+       <% } %>
       </div>
     </div>
   </div>
-</div>
+  <div class="col-md-8 mt-4" style="padding-bottom: 5%; padding-left: 5%;">
+    <div id="title" style="
+      border-radius: 6px;
+      padding: 4px;
+      padding-right: 5px;
+      padding-left: 5px;" class="bg-primary text-center mb-3">
+      <h3 id="calendar-name" class="text-light mt-1"></h3>
+    </div>
+    <div id="calendar"></div>
+  </div>
+</body>
 
 <%- include ('../partials/footer') %>
   
